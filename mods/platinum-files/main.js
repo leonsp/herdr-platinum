@@ -179,13 +179,19 @@ export default class PlatinumFiles extends View {
     if (key() !== this.context?.key) this.refresh(cx);
     const t = theme();
     return v_flex().id("files").size_full().min_h(0).rounded(0).overflow_hidden().bg(t.background).border_1().border_color(t.foreground).text_color(t.foreground).text_size(14)
-      .child(h_flex().h(30).flex_none().px(10).gap(8).items_center().bg(t.surface).border_b(1).border_color(t.border)
-        .when(Boolean(this.file), el => el.child(div().id("files-back").w(20).cursor_pointer().text_color(t.muted).on_click((_e, cx) => { this.show(null); cx.notify(); }).child("←")))
-        .child(div().font_semibold().child("Files"))
-        .child(div().flex_1().min_w(0).truncate().text_right().text_size(14).text_color(t.dim).child(this.file ?? this.root?.split(/[\\/]/).pop() ?? "")))
-      // The Finder's info strip under the title bar: "17 items".
-      .when(!this.file, el => el.child(h_flex().h(26).flex_none().px(10).items_center().justify_center().bg(t.surface).border_b(1).border_color(t.border).text_size(14).text_color(t.muted)
-        .child(`${this.entries.get("")?.length ?? 0} ${(this.entries.get("")?.length ?? 0) === 1 ? "item" : "items"}`)))
+      // Platinum title bar: dotted band, centred bold title.
+      .child(h_flex().relative().overflow_hidden().h(36).flex_none().items_center().text_size(14)
+        .child(image("mods/platinum-files/titlebar-dots.svg").absolute().top(0).left(0).w(640).h(36))
+        .child(this.file
+          ? div().id("files-back").w(26).flex_none().flex().items_center().justify_center().cursor_pointer().text_color(t.muted).on_click((_e, cx) => { this.show(null); cx.notify(); }).child(div().px(4).bg(t.surface).child("←"))
+          : div().w(26).flex_none())
+        .child(div().flex_1())
+        .child(div().px(10).h(20).flex().items_center().bg(t.surface).font_family("Lucida Grande").font_bold().child("Files"))
+        .child(div().flex_1())
+        .child(div().w(26).flex_none()))
+      // The Finder's info strip under the title bar: folder name and "17 items".
+      .child(h_flex().h(26).flex_none().px(10).items_center().justify_center().bg(t.surface).border_b(1).border_color(t.border).text_size(14).text_color(t.muted)
+        .child(div().min_w(0).truncate().child(this.file ?? `${this.root?.split(/[\\/]/).pop() ?? ""} · ${this.entries.get("")?.length ?? 0} ${(this.entries.get("")?.length ?? 0) === 1 ? "item" : "items"}`)))
       .when(!this.file, el => el.child(v_flex().id("files-tree").flex_1().min_h(0).overflow_y_scrollbar().p(0).children(this.rows("", 0, [], t))
         .when(Boolean(this.error) || !this.entries.get("")?.length, el => el.child(div().p(8).text_size(14).text_color(t.dim).child(this.error || (this.loading ? "Loading files…" : this.root ? "No files" : "No folder"))))
         .when(this.limited, el => el.child(div().p(8).text_size(14).text_color(t.dim).child("File list limited to 500 entries per folder and 5,000 total")))))

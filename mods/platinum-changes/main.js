@@ -3,7 +3,7 @@
 // See NOTICE. Changes: square corners, black borders, a gray header bar, a
 // square commit input and a plain bordered Platinum commit button. Git, diff
 // and commit behaviour is unchanged.
-import { View, div } from "gpui-kit";
+import { View, div, image } from "gpui-kit";
 import { v_flex, h_flex, InputState, Input, Scrollbar, v_virtual_list } from "gpui-base";
 import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings } from "herdr";
 
@@ -180,17 +180,20 @@ export default class PlatinumChanges extends View {
       .child(div().flex_1().min_w(0).truncate().child(text));
   }
 
-  // A raised Platinum button: black outline, white top-left edge, gray
+  // A raised Platinum button: rounded black outline, white top-left edge, gray
   // bottom-right edge. The API has no per-edge border colors, so it is three
-  // nested boxes: padding leaves 1px of each outer box showing.
+  // nested boxes: padding leaves 1px of each outer box showing. An enabled
+  // button is the default button, so it gets the heavy outer ring.
   bevelButton(t, id, enabled, label, onClick) {
-    return div().id(id).h(34).flex_none().border_1().border_color(enabled ? t.foreground : t.border)
-      .bg("#808080").pr(1).pb(1)
-      .child(div().size_full().bg("#ffffff").pl(1).pt(1)
-        .child(div().id(`${id}-face`).size_full().px(13).flex().items_center().justify_center()
-          .bg(t.surface).text_color(enabled ? t.foreground : t.dim).text_size(14)
-          .when(enabled, (e) => e.cursor_pointer().hover((s) => s.bg(t.accent)))
-          .on_click(onClick).child(label)));
+    return div().id(`${id}-ring`).flex_none().p(1).border_2().rounded(9).bg(t.surface)
+      .border_color(enabled ? t.foreground : t.surface)
+      .child(div().id(id).h(28).border_1().rounded(6).overflow_hidden().border_color(enabled ? t.foreground : t.border)
+        .bg("#808080").pr(1).pb(1)
+        .child(div().size_full().bg("#ffffff").pl(1).pt(1).rounded(5)
+          .child(div().id(`${id}-face`).size_full().px(14).flex().items_center().justify_center().rounded(4)
+            .bg(t.surface).text_color(enabled ? t.foreground : t.dim).text_size(14).font_family("Lucida Grande").font_bold()
+            .when(enabled, (e) => e.cursor_pointer().hover((s) => s.bg(t.accent)))
+            .on_click(onClick).child(label))));
   }
 
   render(cx) {
@@ -201,10 +204,16 @@ export default class PlatinumChanges extends View {
       .on_key_down((e, cx) => {
         if (e.key === "escape" && this.typing) { this.typing = false; this.handle.focus(); cx.stop_propagation(); cx.notify(); }
       })
-      .child(h_flex().h(30).flex_none().px(10).gap(8).items_center().bg(t.surface).border_b(1).border_color(t.border)
-        .child(div().font_semibold().child("Changes"))
-        .child(div().px(5).py(1).rounded(0).border_1().border_color(t.border).text_size(14).text_color(t.muted).child(`${this.files.length} files`))
-        .child(div().flex_1()).child(div().text_size(14).text_color(t.ansi2).child(`+${add}`)).child(div().text_size(14).text_color(t.ansi1).child(`−${del}`)))
+      // Platinum title bar: dotted band, centred bold title.
+      .child(h_flex().relative().overflow_hidden().h(36).flex_none().items_center().text_size(14)
+        .child(image("mods/platinum-changes/titlebar-dots.svg").absolute().top(0).left(0).w(640).h(36))
+        .child(div().flex_1())
+        .child(div().px(10).h(20).flex().items_center().bg(t.surface).font_family("Lucida Grande").font_bold().child("Changes"))
+        .child(div().flex_1()))
+      // Info strip under the title bar: file count and line totals.
+      .child(h_flex().h(26).flex_none().px(10).gap(10).items_center().justify_center().bg(t.surface).border_b(1).border_color(t.border).text_size(14).text_color(t.muted)
+        .child(`${this.files.length} ${this.files.length === 1 ? "file" : "files"}`)
+        .child(div().text_color(t.ansi2).child(`+${add}`)).child(div().text_color(t.ansi1).child(`−${del}`)))
       // overflow_y_scrollbar() wraps the list, so its flex sizing never reached the panel's layout.
       .child(div().flex_1().min_h(44).max_h(this.files.length * 32 + 12).relative().border_b(1).border_color(t.border)
         .child(v_flex().id("changes-list").absolute().inset_0().overflow_y_scroll().p(0).children(this.files.map((f) => {
@@ -223,7 +232,7 @@ export default class PlatinumChanges extends View {
         .child(Scrollbar.vertical("changes-diff").viewport_from_layout().absolute().inset_0())
         .when(!this.open && this.files.length > 0, (e) => e.child(div().absolute().top(6).px(12).text_color(t.dim).child("Select a file to view its changes"))))
       .when(Boolean(this.note), (e) => e.child(div().px(10).pb(8).text_size(14).text_color(t.ansi1).child(this.note)))
-      .child(h_flex().flex_none().p(10).gap(8).border_t(1).border_color(t.border)
+      .child(h_flex().flex_none().p(10).gap(8).items_center().border_t(1).border_color(t.border)
         // Sunken field: gray top-left edge, white bottom-right edge, as nested
         // boxes (see bevelButton).
         .child(div().id("commit-message").flex_1().min_w(0).h(34).border_1().border_color(this.typing ? t.ring : t.foreground)

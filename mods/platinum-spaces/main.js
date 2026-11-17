@@ -8,7 +8,7 @@
 // its first terminal is in now, only where unusual: branch, ahead/behind. Agent state lives in the agents list, not here. Click to
 // switch, right-click for its menu, drag to reorder.
 
-import { View, div, svg } from "gpui-kit";
+import { View, div, svg, image } from "gpui-kit";
 import { v_flex, h_flex, ScrollHandle } from "gpui-base";
 import { spaces, machines, panes, run, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout } from "herdr";
 
@@ -543,10 +543,13 @@ export default class Spaces extends View {
       if (this.activeAt >= 0) this.scroll.scroll_to_item(this.activeAt);
     }
     return v_flex().size_full().min_h(0).bg(t.chrome).text_size(14)
-      .child(h_flex().h(36).pl(16).pr(10).items_center().justify_between().text_size(14).text_color(t.dim)
-        .when(collapsed, el => el.pl(0).pr(0).justify_center())
-        .when(!collapsed, el => el.child("Spaces"))
-        .child(div().id("space-new").size(26).flex_none().flex().items_center().justify_center().rounded(6).hover(s => s.bg(t.hover).text_color(t.foreground))
+      .child(h_flex().relative().overflow_hidden().flex_none().h(37).items_center().text_size(14).text_color(t.foreground)
+        .child(image("mods/platinum-spaces/dots-emboss-tall.svg").absolute().top(0).left(0).w(640).h(48))
+        .when(collapsed, el => el.justify_center())
+        // The left spacer matches the + box, so the title sits in the centre.
+        .when(!collapsed, el => el.child(div().w(26).flex_none()).child(div().flex_1()).child(div().px(10).h(20).flex().items_center().bg(t.chrome).font_family("Lucida Grande").font_bold().child("Spaces")).child(div().flex_1()))
+        .child(div().id("space-new").size(20).flex_none().flex().items_center().justify_center().rounded(6).bg(t.chrome).hover(s => s.bg(t.hover).text_color(t.foreground))
+          .when(!collapsed, el => el.mr(6))
           .on_click(() => run("space.new")).child(svg("mods/workspace-chrome/plus.svg").size(14))))
       .child(v_flex().flex_1().min_h(0).px(0).pb(14).overflow_y_scrollbar().mode("always").track_scroll(this.scroll)
         // A block above (another mod's) growing, or the window resizing, shrinks this list and can push the active space out.

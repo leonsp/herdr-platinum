@@ -5,7 +5,7 @@ import { View, div } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
 import { panes, props, run, theme } from "herdr";
 
-const STRIPES = 7;
+const STRIPES = 5;
 const BOX = 14;
 
 export default class PlatinumPane extends View {
@@ -16,7 +16,8 @@ export default class PlatinumPane extends View {
   stripes(t) {
     const lines = [];
     for (let i = 0; i < STRIPES; i++) {
-      lines.push(div().h(1).bg(t.dim));
+      // Embossed: a dark line with a white highlight beneath it.
+      lines.push(v_flex().child(div().h(1).bg(t.dim)).child(div().h(1).bg("#ffffff")));
     }
     return v_flex().flex_1().gap(1).px(4).children(lines);
   }
@@ -57,14 +58,14 @@ export default class PlatinumPane extends View {
       ? [
           this.box(t, `close-${pane}`, "pane.close", { pane }),
           this.stripes(t),
-          div().flex_none().truncate().max_w(320).px(8).text_color(t.foreground).child(name),
+          div().flex_none().truncate().max_w(320).px(8).font_family("Lucida Grande").font_bold().text_color(t.foreground).child(name),
           this.stripes(t),
           this.box(t, `zoom-${pane}`, "pane.zoom", { pane }, true),
         ]
       : [
           div().w(BOX).h(BOX).flex_none(),
           div().flex_1(),
-          div().flex_none().truncate().max_w(320).px(8).text_color(t.muted).child(name),
+          div().flex_none().truncate().max_w(320).px(8).font_family("Lucida Grande").font_bold().text_color(t.muted).child(name),
           div().flex_1(),
           div().w(BOX).h(BOX).flex_none(),
         ];
