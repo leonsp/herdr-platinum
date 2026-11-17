@@ -1,76 +1,47 @@
 # Herdr Platinum
 
-A Mac OS 9 Platinum look for Herdr: a gray theme, a layout, a striped window
-bar and striped pane title bars.
-
-```
-themes/platinum.json          palette (the layout's own theme)
-layouts/platinum.json         window structure, fonts, pane frames, panel
-mods/platinum-bar/            striped bar replacing the macOS title bar
-mods/platinum-pane/           striped pane header (close and zoom boxes)
-mods/platinum-files/          Files panel with Platinum folder and page icons
-mods/platinum-changes/        Changes panel with square corners and buttons
-mods/platinum-tabs/           tab bar in Platinum grays, 14px text
-mods/platinum-spaces/         Spaces sidebar, 14px text, square selection
-mods/platinum-agents/         Agents list, 14px text, square rows
-```
+A Mac OS 9 Platinum look for Herdr, as a set of mods: striped window bar,
+striped pane title bars, Platinum tabs, spaces, agents, Files and Changes
+panels, and a bevelled status bar with a resize grip.
 
 <img width="1464" height="960" alt="Screenshot of Herdr with the Platinum theme and mods" src="https://github.com/user-attachments/assets/199af85d-c9e3-4ca2-aa2c-bbaac0a99594" />
 
+`RECIPE.md` is the brief another agent can build the whole thing from.
+
+```
+mods/platinum-bar/       striped bar replacing the macOS title bar
+mods/platinum-pane/      striped pane header (close and zoom boxes)
+mods/platinum-files/     Files panel with Platinum folder and page icons
+mods/platinum-changes/   Changes panel with square corners and buttons
+mods/platinum-tabs/      tab bar in Platinum grays, 14px text
+mods/platinum-spaces/    Spaces sidebar, 14px text, square selection
+mods/platinum-agents/    Agents list, 14px text, square rows
+mods/platinum-grip/      status bar: breadcrumbs, git branch, split, zoom,
+                         palette, clock, resize grip
+keys.json                cmd-k opens the command palette
+```
+
+The mods need a layout with matching blocks and the Platinum colours. The
+block tree and palette are in `RECIPE.md`.
+
 ## Install
 
-Link the files into Herdr's home, so edits here show up live:
+From a clone, link each mod into Herdr's home and check it:
 
 ```sh
 H=~/.config/herdr-app
-R=$(pwd)   # run from a clone of this repository
-ln -s $R/themes/platinum.json $H/themes/platinum.json
-ln -s $R/layouts/platinum.json $H/layouts/platinum.json
-ln -s $R/mods/platinum-bar $H/mods/platinum-bar
-ln -s $R/mods/platinum-pane $H/mods/platinum-pane
-ln -s $R/mods/platinum-files $H/mods/platinum-files
-ln -s $R/mods/platinum-changes $H/mods/platinum-changes
-ln -s $R/mods/platinum-tabs $H/mods/platinum-tabs
-ln -s $R/mods/platinum-spaces $H/mods/platinum-spaces
-ln -s $R/mods/platinum-agents $H/mods/platinum-agents
-herdr-app check $H/mods/platinum-bar
-herdr-app check $H/mods/platinum-pane
-herdr-app check $H/mods/platinum-files
-herdr-app check $H/mods/platinum-changes
-herdr-app check $H/mods/platinum-tabs
-herdr-app check $H/mods/platinum-spaces
-herdr-app check $H/mods/platinum-agents
-herdr-app do layout.switch '{"name":"platinum"}'
+for m in bar pane files changes tabs spaces agents grip; do
+  ln -s "$(pwd)/mods/platinum-$m" "$H/mods/platinum-$m"
+  herdr-app check "$H/mods/platinum-$m"
+done
 ```
 
-Use `cp -R` instead of `ln -s` to copy rather than link.
-
-## Uninstall
-
-Switch to another layout with `ctrl-shift-l`, then delete the links or
-copies from `~/.config/herdr-app`.
-
-## Notes
-
-- Fonts are Monaco (terminals) and Geneva (UI). Change `font` and `ui_font`
-  in the layout if your Mac lacks them.
-- Mods linked with `ln -s` don't hot-reload on edit. Switch to another layout
-  and back (`layout.switch` to `main`, then `platinum`) to restart them.
-- Pinstripes show on the focused pane only. Unfocused panes get a plain
-  gray title, as in Platinum.
-- The layout hides the system title bar. The macOS window buttons sit over
-  the left gap of `platinum-bar` at `traffic_lights` in the layout, so keep
-  `BUTTONS_GAP` in the bar mod in step with it.
-- Text is 14px or larger throughout. Raise `font_size` in the layout for a
-  bigger terminal.
-- The spaces, agents and tabs mods are copies of Herdr's own, so they do not
-  follow Herdr updates.
-- The terminal pane is white. Programs that assume a dark background may
-  need their light theme to be readable.
+Merge `keys.json` into your own. Linked mods don't hot-reload: switch to
+another layout and back.
 
 ## Licence
 
 MIT, see `LICENSE`. The `platinum-files`, `platinum-changes`,
-`platinum-tabs`, `platinum-spaces` and `platinum-agents` mods are modified copies of Herdr's own mods and stay under
-the Apache License 2.0. See `NOTICE`. Put the licence text in
-`LICENSES/Apache-2.0.txt`.
+`platinum-tabs`, `platinum-spaces` and `platinum-agents` mods are modified
+copies of Herdr's own mods and stay under the Apache License 2.0. See
+`NOTICE` and `LICENSES/Apache-2.0.txt`.
