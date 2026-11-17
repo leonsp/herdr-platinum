@@ -41,7 +41,6 @@ another layout and back.
 
 ## Licence
 
-MIT, see `LICENSE`. The `platinum-files`, `platinum-changes`,
+Apache License 2.0, see `LICENSE`. The `platinum-files`, `platinum-changes`,
 `platinum-tabs`, `platinum-spaces` and `platinum-agents` mods are modified
-copies of Herdr's own mods and stay under the Apache License 2.0. See
-`NOTICE` and `LICENSES/Apache-2.0.txt`.
+copies of Herdr's own mods, also Apache 2.0. See `NOTICE`.

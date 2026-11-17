@@ -112,7 +112,7 @@ Mods:
   `platinum-changes`: modified copies of Herdr's shipped `tabs`, `spaces`,
   `agents`, `files` and `changes` mods, restyled only (grey tokens, square
   corners, 14px text, taller rows). Start from Herdr's copy, keep behaviour,
-  change the look as in What you see. Apache 2.0, see `NOTICE`. They call
+  change the look as in What you see. Apache 2.0, see `LICENSE` and `NOTICE`. They call
   `exec` for git and read files, and the tabs mod draws Herdr's own
   `mods/workspace-chrome/spinner.svg` and `mods/pane/close.svg`.
   Art: `titlebar-dots.svg`, `dots-emboss.svg`, `dots-emboss-tall.svg`
