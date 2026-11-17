@@ -180,6 +180,19 @@ export default class PlatinumChanges extends View {
       .child(div().flex_1().min_w(0).truncate().child(text));
   }
 
+  // A raised Platinum button: black outline, white top-left edge, gray
+  // bottom-right edge. The API has no per-edge border colors, so it is three
+  // nested boxes: padding leaves 1px of each outer box showing.
+  bevelButton(t, id, enabled, label, onClick) {
+    return div().id(id).h(28).flex_none().border_1().border_color(enabled ? t.foreground : t.border)
+      .bg("#808080").pr(1).pb(1)
+      .child(div().size_full().bg("#ffffff").pl(1).pt(1)
+        .child(div().id(`${id}-face`).size_full().px(13).flex().items_center().justify_center()
+          .bg(t.surface).text_color(enabled ? t.foreground : t.dim).text_size(12)
+          .when(enabled, (e) => e.cursor_pointer().hover((s) => s.bg(t.accent)))
+          .on_click(onClick).child(label)));
+  }
+
   render(cx) {
     if (key() !== this.context) this.refresh(cx);
     const t = theme(), add = this.files.reduce((n, f) => n + f.add, 0), del = this.files.reduce((n, f) => n + f.del, 0);
@@ -211,7 +224,13 @@ export default class PlatinumChanges extends View {
         .when(!this.open && this.files.length > 0, (e) => e.child(div().absolute().top(6).px(12).text_color(t.dim).child("Select a file to view its changes"))))
       .when(Boolean(this.note), (e) => e.child(div().px(10).pb(8).text_size(11).text_color(t.ansi1).child(this.note)))
       .child(h_flex().flex_none().p(10).gap(8).border_t(1).border_color(t.border)
-        .child(div().id("commit-message").flex_1().min_w(0).h(28).px(10).flex().items_center().rounded(0).bg(t.input).border_1().border_color(this.typing ? t.ring : t.foreground).cursor_text().on_mouse_down("left", (_e, cx) => cx.stop_propagation()).child(Input.new(this.input).h_full().text_size(12).text_color(t.foreground)))
-        .child(div().id("commit").h(28).px(14).flex().items_center().rounded(0).bg(t.surface).border_1().border_color(enabled ? t.foreground : t.border).text_color(enabled ? t.foreground : t.dim).text_size(12).when(enabled, (e) => e.cursor_pointer().hover((s) => s.bg(t.accent))).on_click((_e, cx) => this.commit(cx)).child(this.busy ? "Committing…" : "Commit")));
+        // Sunken field: gray top-left edge, white bottom-right edge, as nested
+        // boxes (see bevelButton).
+        .child(div().id("commit-message").flex_1().min_w(0).h(28).border_1().border_color(this.typing ? t.ring : t.foreground)
+          .bg("#ffffff").pr(1).pb(1).cursor_text().on_mouse_down("left", (_e, cx) => cx.stop_propagation())
+          .child(div().size_full().bg("#808080").pl(1).pt(1)
+            .child(div().size_full().px(9).flex().items_center().bg(t.input)
+              .child(Input.new(this.input).h_full().text_size(12).text_color(t.foreground)))))
+        .child(this.bevelButton(t, "commit", enabled, this.busy ? "Committing…" : "Commit", (_e, cx) => this.commit(cx))));
   }
 }

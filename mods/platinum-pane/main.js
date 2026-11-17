@@ -49,7 +49,9 @@ export default class PlatinumPane extends View {
     const p = this.me();
     if (!p) return div();
     const pane = p.pane;
-    const name = p.title || p.program?.name || "shell";
+    // Shells often set the title to user@host:path. Keep the path, drop the
+    // account and machine name.
+    const name = (p.title || p.program?.name || "shell").replace(/^[^@\s:]+@[^:\s]+:\s*/, "");
 
     const kids = p.focused
       ? [
