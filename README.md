@@ -15,7 +15,7 @@ mods/platinum-spaces/         Spaces sidebar, 14px text, square selection
 mods/platinum-agents/         Agents list, 14px text, square rows
 ```
 
-<img width="1464" height="960" alt="Screenshot of Herdr with the Platinum theme and mods" src="https://github.com/user-attachments/assets/2fb04056-6701-4871-893b-d363fee640bf" />
+<img width="1464" height="960" alt="Screenshot of Herdr with the Platinum theme and mods" src="https://github.com/user-attachments/assets/199af85d-c9e3-4ca2-aa2c-bbaac0a99594" />
 
 ## Install
 
