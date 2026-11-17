@@ -1,0 +1,6 @@
+preview.png
+docs/plans/
+.DS_Store
+# Written by Herdr into linked mod folders
+gpui-kit.d.ts
+jsconfig.json

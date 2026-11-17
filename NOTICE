@@ -1,0 +1,16 @@
+Herdr Platinum
+
+The following folders contain modified copies of mods shipped with Herdr
+(https://github.com/herdrdev/herdr), which is licensed under the Apache
+License, Version 2.0. The full text is in LICENSES/Apache-2.0.txt.
+
+  mods/platinum-files/main.js     from Herdr's `files` mod
+  mods/platinum-changes/main.js   from Herdr's `changes` mod
+  mods/platinum-tabs/main.js      from Herdr's `tabs` mod
+
+Each file carries a notice at the top that it was changed, and describes
+the changes. Copyright in the original code remains with the Herdr authors.
+
+Everything else in this repository (the theme, the layout, the
+platinum-bar and platinum-pane mods, and the SVG icons) is licensed under
+the MIT License in LICENSE.
