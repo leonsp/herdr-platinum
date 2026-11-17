@@ -83,6 +83,7 @@
           ]
         }
       ]
-    }
+    },
+    { "id": "footer", "type": "block", "size": { "px": 26 }, "content": { "mod": "platinum-grip" } }
   ]
 }
