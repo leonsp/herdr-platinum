@@ -3,15 +3,15 @@
   "type": "column",
   "theme": "platinum",
   "font": "Monaco",
-  "font_size": 12,
+  "font_size": 14,
   "ui_font": "Geneva",
   "titlebar": "none",
-  "traffic_lights": [14, 5],
+  "traffic_lights": [14, 7],
   "children": [
     {
       "id": "titlebar",
       "type": "block",
-      "size": { "px": 24 },
+      "size": { "px": 28 },
       "window_drag": true,
       "content": { "mod": "platinum-bar" }
     },
@@ -29,8 +29,8 @@
           "background": "surface",
           "divider": { "width": 1, "color": "border" },
           "children": [
-            { "id": "spaces", "type": "block", "content": { "mod": "spaces" } },
-            { "id": "agents", "type": "block", "content": { "mod": "agents" } }
+            { "id": "spaces", "type": "block", "content": { "mod": "platinum-spaces" } },
+            { "id": "agents", "type": "block", "content": { "mod": "platinum-agents" } }
           ]
         },
         {
@@ -38,7 +38,7 @@
           "type": "column",
           "background": "canvas",
           "children": [
-            { "id": "tabs", "type": "block", "size": { "px": 30 }, "content": { "mod": "tabs" } },
+            { "id": "tabs", "type": "block", "size": { "px": 40 }, "content": { "mod": "platinum-tabs" } },
             {
               "id": "main",
               "type": "block",
@@ -52,7 +52,7 @@
                   "focus": { "width": 1, "color": "#000000" },
                   "header": {
                     "content": { "mod": "platinum-pane" },
-                    "height": 20,
+                    "height": 26,
                     "position": "top",
                     "reveal": "always"
                   },

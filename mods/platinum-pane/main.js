@@ -5,8 +5,8 @@ import { View, div } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
 import { panes, props, run, theme } from "herdr";
 
-const STRIPES = 6;
-const BOX = 12;
+const STRIPES = 7;
+const BOX = 14;
 
 export default class PlatinumPane extends View {
   me() {
@@ -41,7 +41,7 @@ export default class PlatinumPane extends View {
         run(command, args);
       })
       .when(Boolean(inner), (el) =>
-        el.child(div().w(5).h(5).border(1).border_color(t.foreground)));
+        el.child(div().w(6).h(6).border(1).border_color(t.foreground)));
   }
 
   render(_cx) {
@@ -78,7 +78,7 @@ export default class PlatinumPane extends View {
       .bg(t.surface)
       .border_b(1)
       .border_color(t.border)
-      .text_size(12)
+      .text_size(14)
       .on_click(() => run("pane.focus", { pane }))
       .children(kids);
   }

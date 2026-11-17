@@ -5,7 +5,7 @@ import { View, div } from "gpui-kit";
 import { v_flex, h_flex } from "gpui-base";
 import { spaces, theme, settings } from "herdr";
 
-const STRIPES = 6;
+const STRIPES = 7;
 const BUTTONS_GAP = 78;
 
 export default class PlatinumBar extends View {
@@ -33,7 +33,7 @@ export default class PlatinumBar extends View {
       .bg(t.chrome)
       .border_b(1)
       .border_color(t.border)
-      .text_size(12)
+      .text_size(14)
       .children([
         div().w(gap).h(12).flex_none(),
         this.stripes(t),

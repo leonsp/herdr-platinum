@@ -10,7 +10,9 @@ mods/platinum-bar/            striped bar replacing the macOS title bar
 mods/platinum-pane/           striped pane header (close and zoom boxes)
 mods/platinum-files/          Files panel with Platinum folder and page icons
 mods/platinum-changes/        Changes panel with square corners and buttons
-mods/platinum-tabs/           optional square tabs (not used by the layout)
+mods/platinum-tabs/           tab bar in Platinum grays, 14px text
+mods/platinum-spaces/         Spaces sidebar, 14px text, square selection
+mods/platinum-agents/         Agents list, 14px text, square rows
 ```
 
 ## Install
@@ -26,10 +28,16 @@ ln -s $R/mods/platinum-bar $H/mods/platinum-bar
 ln -s $R/mods/platinum-pane $H/mods/platinum-pane
 ln -s $R/mods/platinum-files $H/mods/platinum-files
 ln -s $R/mods/platinum-changes $H/mods/platinum-changes
+ln -s $R/mods/platinum-tabs $H/mods/platinum-tabs
+ln -s $R/mods/platinum-spaces $H/mods/platinum-spaces
+ln -s $R/mods/platinum-agents $H/mods/platinum-agents
 herdr-app check $H/mods/platinum-bar
 herdr-app check $H/mods/platinum-pane
 herdr-app check $H/mods/platinum-files
 herdr-app check $H/mods/platinum-changes
+herdr-app check $H/mods/platinum-tabs
+herdr-app check $H/mods/platinum-spaces
+herdr-app check $H/mods/platinum-agents
 herdr-app do layout.switch '{"name":"platinum"}'
 ```
 
@@ -51,16 +59,16 @@ copies from `~/.config/herdr-app`.
 - The layout hides the system title bar. The macOS window buttons sit over
   the left gap of `platinum-bar` at `traffic_lights` in the layout, so keep
   `BUTTONS_GAP` in the bar mod in step with it.
-- For square tabs, link `mods/platinum-tabs` and set the layout's `tabs`
-  block to `"mod": "platinum-tabs"`.
-- The sidebar rows (spaces and agents) are Herdr's own mods, so they keep
-  their rounded corners.
+- Text is 14px or larger throughout. Raise `font_size` in the layout for a
+  bigger terminal.
+- The spaces, agents and tabs mods are copies of Herdr's own, so they do not
+  follow Herdr updates.
 - The terminal pane is white. Programs that assume a dark background may
   need their light theme to be readable.
 
 ## Licence
 
-MIT, see `LICENSE`. The `platinum-files`, `platinum-changes` and
-`platinum-tabs` mods are modified copies of Herdr's own mods and stay under
+MIT, see `LICENSE`. The `platinum-files`, `platinum-changes`,
+`platinum-tabs`, `platinum-spaces` and `platinum-agents` mods are modified copies of Herdr's own mods and stay under
 the Apache License 2.0. See `NOTICE`. Put the licence text in
 `LICENSES/Apache-2.0.txt`.
