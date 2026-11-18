@@ -31,11 +31,11 @@ Top to bottom:
 - **Tab bar**, 40px, `chrome`. Tabs 32px tall, top corners 7px. The active
   tab is `surface` with a black outline on top, left and right only, so it
   joins the pane below. Inactive tabs are `chrome` with `muted` text. After
-  the tabs: a `+` button, then Files and Changes panel buttons. These are
-  Platinum push buttons, 24px high, bold 14px text, black 1px outline,
+  the tabs: a `+` button (24x20), then Files and Changes panel buttons (24px
+  high). These are Platinum push buttons, bold 14px text, black 1px outline,
   radius 3, white highlight top and left, `#808080` shadow bottom and right
   (same bevel as the status bar buttons). The open panel's button is
-  depressed: the bevel is swapped and the face is `selected`.
+  depressed: the bevel is swapped and the face is darker grey `#bbbbbb`.
 - **Pane**, white, 1px black border, no radius. Header 26px: a 14px close
   box at the left (white, 1px black outline, empty), pinstripes, the title
   centred in bold, pinstripes, a 14px zoom box at the right (same box with a

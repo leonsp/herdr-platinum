@@ -9,17 +9,21 @@ import { spaces, panes, run, openOverlay, theme, window, shared, layout, setting
 
 const DARK = "#808080";
 const LIGHT = "#ffffff";
+const PRESSED = "#bbbbbb";
+// Geneva has no bold face. Lucida Grande does, as in the status bar.
+const FONT = "Lucida Grande";
 
 // A Platinum push button: black outline, white highlight on the top and left,
 // grey shadow on the bottom and right. Pressed swaps the bevel and darkens
 // the face. Elements have no per-edge border colours, so the bevel is nested
 // divs with padding.
-function bevel(t, id, pressed, kids, onClick) {
-  const face = h_flex().h(24).px(10).gap(6).items_center().justify_center()
-    .text_size(14).font_bold().text_color(t.foreground)
-    .bg(pressed ? t.selected : t.chrome)
+function bevel(t, id, pressed, kids, onClick, small = false) {
+  const face = h_flex().h(small ? 20 : 24).when(small, el => el.w(24), el => el.px(10)).gap(6).items_center().justify_center()
+    .text_size(14).font_family(FONT).font_bold().text_color(t.foreground)
+    .bg(pressed ? PRESSED : t.chrome)
     .when(!pressed, el => el.hover(s => s.bg(t.hover)))
-    .children(kids);
+    // Extra room after the label, as a spacer: pr() on the face did not show.
+    .children(small ? kids : [...kids, div().w(0).h(1).flex_none()]);
   return div().id(id).flex_none().rounded(3).border_1().border_color("#000000").bg(DARK)
     .on_mouse_down("left", (_e, cx) => cx.stop_propagation())
     .on_click(onClick)
@@ -170,7 +174,7 @@ export default class PlatinumTabs extends View {
       .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_end().gap(3).overflow_x_scrollbar().track_scroll(this.scroll)
         .on_size_change((_size, cx) => { if (active >= 0) { this.scroll.scroll_to_item(active); cx.notify(); } })
         .children(shown.map(item)))
-      .child(bevel(t, "tab-new", false, ["+"], () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 })))
+      .child(bevel(t, "tab-new", false, ["+"], () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 }), true))
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg")))
       .when(w?.buttons, el => el.child(button("minimize", w.platform === "windows" ? svg("mods/tabs/win-min.svg").size(16) : "−", () => run("window.minimize")))
