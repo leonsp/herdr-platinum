@@ -468,7 +468,7 @@ export default class Spaces extends View {
     return v_flex()
       .relative()
       .id(`space-${w.id}`)
-      .tooltip([w.name, this.gitLabel(g, tree, w.name)].filter(Boolean).join(" \u00b7 "))
+      .tooltip([w.name, this.gitLabel(g, tree, w.name), g?.ahead > 0 ? `${g.ahead} ahead` : "", g?.behind > 0 ? `${g.behind} behind` : ""].filter(Boolean).join(" \u00b7 "))
       .px(8)
       .h(rowHeight({ tree }))
       .flex_none()
