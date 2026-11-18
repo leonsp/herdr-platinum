@@ -41,6 +41,9 @@ Top to bottom:
   radius 3, white highlight top and left, `#808080` shadow bottom and right
   (same bevel as the status bar buttons). The open panel's button is
   depressed: the bevel is swapped and the face is darker grey `#bbbbbb`.
+  An optional third panel button, Extended, shows only when the
+  `cria-files-extended` mod is installed and the layout has a `files-extended`
+  block.
 - **Pane**, white, 1px black border, no radius. Header 26px: a 14px close
   box at the left (white, 1px black outline, empty), pinstripes, the title
   centred in bold, pinstripes, a 14px zoom box at the right (same box with a
@@ -139,6 +142,16 @@ Mods:
   `pt(1).pl(1)` `#808080`, face `surface`, 18px high. Raised button: 20x16,
   black 1px outline, radius 3, outer `pr(1).pb(1)` `#808080`, inner
   `pt(1).pl(1)` white, face `chrome`, bold 13px.
+
+Optional mods (gsydler/herdr-cria). Each is detected by a folder check in
+`${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods`; without it, nothing changes.
+
+- `cria-file-preview`: a click on a file in `platinum-files` opens it in a
+  preview tab (`tab.new` with `mod` and `props` `{file, on}`).
+- `cria-files-extended`: a Files panel with a right-click menu and file icons.
+  Add `{ "id": "files-extended", "type": "block", "content": { "mod":
+  "cria-files-extended" } }` to the `panel-body` stack (see
+  `layouts/platinum.json`) and `platinum-tabs` shows its button.
 
 `keys.json` merges into the person's own: add `cmd-k` under `global` and ask
 before replacing a key they use.

@@ -5,7 +5,7 @@
 // push buttons. Behaviour is unchanged.
 import { View, div, svg, image } from "gpui-kit";
 import { h_flex, ScrollHandle } from "gpui-base";
-import { spaces, panes, run, openOverlay, theme, window, shared, layout, settings } from "herdr";
+import { spaces, panes, run, exec, openOverlay, theme, window, shared, layout, settings } from "herdr";
 
 const DARK = "#808080";
 const LIGHT = "#ffffff";
@@ -57,12 +57,19 @@ function label(tab, lead) {
 }
 
 export default class PlatinumTabs extends View {
-  init() {
+  init(_props, cx) {
     this.pressed = null;
     this.scroll = ScrollHandle.new();
     try { this.panels = JSON.parse(localStorage.getItem("panels") ?? "{}"); } catch { this.panels = {}; }
     if (!this.panels || typeof this.panels !== "object" || Array.isArray(this.panels)) this.panels = {};
     this.swipe = { acc: 0, steps: 0, at: 0, last: 0 };
+    // The Files Extended button shows only when that mod is installed.
+    this.extended = false;
+    cx.spawn(async cx => {
+      const r = await exec("sh", ["-c", 'test -d "${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/cria-files-extended"']).catch(() => null);
+      this.extended = r?.code === 0;
+      cx.notify();
+    });
   }
 
   // One tab per wheel notch. A touchpad or smooth-scrolling mouse sends many
@@ -189,6 +196,7 @@ export default class PlatinumTabs extends View {
       .child(bevel(t, "tab-new", false, ["+"], () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 }), true))
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg")))
+      .when(this.extended && Boolean(find(root, "files-extended")), el => el.child(panelButton("files-extended", "Extended", "mods/cria-files-extended/icons/folder.svg")))
       .when(w?.buttons, el => el.child(button("minimize", w.platform === "windows" ? svg("mods/tabs/win-min.svg").size(16) : "−", () => run("window.minimize")))
         .child(button("maximize", w.platform === "windows" ? svg(`mods/tabs/${w.maximized ? "win-restore" : "win-max"}.svg`).size(16) : "□", () => run("window.maximize")))
         .child(button("close-window", w.platform === "windows" ? svg("mods/tabs/win-close.svg").size(16) : svg("mods/pane/close.svg").size(13), () => run("window.close"))));
