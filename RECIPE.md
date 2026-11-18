@@ -3,7 +3,7 @@
 Herdr dressed as Mac OS 9 Platinum: flat light-grey chrome, a periwinkle
 selection, square corners, black 1px outlines, Lucida Grande bold titles
 over embossed pinstripes, and a bevelled status bar along the bottom with a
-resize grip. Eight mods make the pieces. They need a layout with matching
+resize grip. Nine mods make the pieces. They need a layout with matching
 block slots (see Built from).
 
 ![Mac OS 9 Platinum Retro](preview.png)
@@ -185,7 +185,7 @@ before replacing a key they use.
 
 ## Done when
 
-- `herdr-app check mods/<name>` passes for all eight mods.
+- `herdr-app check mods/<name>` passes for all nine mods.
 - After switching to a layout that hosts them, the window bar shows the
   space name between five stripes each side and the macOS buttons are clear
   of it.
@@ -202,3 +202,6 @@ before replacing a key they use.
   maximizes or restores the window.
 - The Files panel shows folder and page icons in colour. The Commit button
   in Changes is a bordered rectangle.
+- With `cria-file-preview` installed, the `> Open` button opens a dialog.
+  A pasted path, even with a stray newline, opens in a preview tab (Open) or
+  a split pane (Open Split). Without that mod, the button is absent.
