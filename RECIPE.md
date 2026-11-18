@@ -35,16 +35,20 @@ Top to bottom:
   tops, as in Mac OS 9 tab panels, bold Lucida Grande text, no gap between
   tabs. The active tab is `surface` with a black outline on top and the
   slants, open at the bottom so it joins the pane below. Inactive tabs are
-  `#bbbbbb` with the same outline. After
-  the tabs: a `+` button (24x20), then Files and Changes panel buttons (24px
-  high). These are Platinum push buttons, bold 14px text, black 1px outline,
+  `#bbbbbb` with the same outline. Right after the last tab, a small
+  inactive tab holds a bold `+` (same caps and face, inside the scrolling
+  row). Then come Files and Changes panel buttons (24px high). These are Platinum push buttons, bold 14px text, black 1px outline,
   radius 3, white highlight top and left, `#808080` shadow bottom and right
   (same bevel as the status bar buttons). The open panel's button is
   depressed: the bevel is swapped and the face is darker grey `#bbbbbb`.
   With `cria-file-preview` installed, a `> Preview` button sits between `+`
   and Files. It opens the `platinum-open` dialog (a text field, Cancel, Open
   Split, Open): paste a path, newlines removed, and the file opens in a
-  preview tab, or a split pane to the right. An optional panel button,
+  preview tab, or a split pane to the right. With the `agenttrail` mod
+  installed (sodiumsun/agenttrail, set its `mod.json` `place` to `none` or it
+  docks itself into the layout), a compass `Map` button follows Preview and
+  runs `pane.split` `{direction:"right", mod:"agenttrail"}`. An optional panel
+  button,
   Extended, shows only when the `cria-files-extended` mod is installed and the
   layout has a `files-extended` block. Buttons, tab, space and agent names, and
   the status bar items carry `.tooltip(text)` labels: names in full, buttons

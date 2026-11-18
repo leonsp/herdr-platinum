@@ -68,11 +68,14 @@ export default class PlatinumTabs extends View {
     // The open-by-path button shows only when cria-file-preview is installed.
     this.extended = false;
     this.preview = false;
+    // The Map button shows only when the agenttrail mod is installed.
+    this.map = false;
     const installed = (name) => exec("sh", ["-c", `test -d "\${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/${name}"`])
       .then(r => r?.code === 0).catch(() => false);
     cx.spawn(async cx => {
       this.extended = await installed("cria-files-extended");
       this.preview = await installed("cria-file-preview");
+      this.map = await installed("agenttrail");
       cx.notify();
     });
   }
@@ -142,6 +145,19 @@ export default class PlatinumTabs extends View {
     const stop = (_e, cx) => cx.stop_propagation();
     const button = (id, label, action) => div().id(id).size(30).flex_none().flex().items_center().justify_center().rounded(6).text_size(18).text_color(t.dim).hover(s => s.bg(t.hover).text_color(t.foreground))
       .on_mouse_down("left", stop).on_click(action).child(label);
+    // SVGs are masks tinted by text_color, so the fill and the outline are
+    // two layers.
+    const cap = (side, color) => div().relative().w(14).h(32).flex_none()
+      .child(svg(`mods/platinum-tabs/tab-${side}-fill.svg`).w(14).h(32).text_color(color))
+      .child(svg(`mods/platinum-tabs/tab-${side}-line.svg`).absolute().inset_0().w(14).h(32).text_color("#000000"));
+    // The + is a small inactive tab after the last one, as in Platinum.
+    const plus = h_flex().id("tab-new").tooltip("New tab or terminal").h(32).items_center().flex_none()
+      .on_mouse_down("left", stop)
+      .on_click(() => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 }))
+      .child(cap("left", PRESSED))
+      .child(h_flex().h_full().px(2).items_center().justify_center().border_t(1).border_color("#000000").bg(PRESSED)
+        .text_size(16).font_family(FONT).font_bold().text_color(t.foreground).child("+"))
+      .child(cap("right", PRESSED));
     const item = (c, i) => {
       const lead = panes().find(p => p.tab === c.id && p.program?.agent) ?? panes().find(p => p.tab === c.id);
       const program = lead?.program;
@@ -150,11 +166,6 @@ export default class PlatinumTabs extends View {
       // Platinum tab panels. The active tab is the pane colour, the others
       // are a darker grey.
       const face = c.active ? t.surface : PRESSED;
-      // SVGs are masks tinted by text_color, so the fill and the outline are
-      // two layers.
-      const cap = (side, color) => div().relative().w(14).h(32).flex_none()
-        .child(svg(`mods/platinum-tabs/tab-${side}-fill.svg`).w(14).h(32).text_color(color))
-        .child(svg(`mods/platinum-tabs/tab-${side}-line.svg`).absolute().inset_0().w(14).h(32).text_color("#000000"));
       const body = h_flex().h_full().px(2).gap(8).items_center().flex_none()
         .text_size(14).font_family(FONT).font_bold()
         .border_t(1).border_color("#000000").bg(face).text_color(t.foreground)
@@ -197,9 +208,9 @@ export default class PlatinumTabs extends View {
       .on_scroll_wheel(e => this.wheel(e))
       .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_end().gap(0).overflow_x_scrollbar().track_scroll(this.scroll)
         .on_size_change((_size, cx) => { if (active >= 0) { this.scroll.scroll_to_item(active); cx.notify(); } })
-        .children(shown.map(item)))
-      .child(bevel(t, "tab-new", false, ["+"], () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 }), true, "New tab or terminal"))
+        .children([...shown.map(item), plus]))
       .when(this.preview, el => el.child(bevel(t, "tab-open", false, [">", "Preview"], () => openOverlay({ mod: "platinum-open", kind: "dialog", width: 460, height: 184, frame: "none" }), false, "Open a file by path")))
+      .when(this.map, el => el.child(bevel(t, "tab-map", false, [svg("mods/platinum-tabs/compass.svg").size(16), "Map"], () => run("pane.split", { direction: "right", mod: "agenttrail" }), false, "Show the Agenttrail map")))
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg", "Browse files")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg", "Review git changes")))
       .when(this.extended && Boolean(find(root, "files-extended")), el => el.child(panelButton("files-extended", "Extended", "mods/cria-files-extended/icons/folder.svg", "Browse files, with a menu")))
