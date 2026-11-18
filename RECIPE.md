@@ -28,8 +28,9 @@ Top to bottom:
   padding.
 - **Left column**, 240px: Spaces over Agents. Each has a 14px header on a
   dotted, embossed title bar (an SVG of dots) with a 1px `border` line under
-  it. Rows follow the Mac OS 9
-  Application menu: bold 13px Lucida Grande, 28px high (26px for worktree
+  it. The action button at the right of each header (the `+` in Spaces, the
+  sort button in Agents) is a 20x16 Platinum push button with the same bevel
+  as the tab bar buttons. Rows follow the Mac OS 9 Application menu: bold 13px Lucida Grande, 28px high (26px for worktree
   rows), a `✓` in a 12px slot before the icon on the active space or focused
   agent, and the `selected` highlight only under the pointer.
 - **Tab bar**, 40px, `chrome`. Tabs 32px tall with slanted sides and rounded
@@ -52,7 +53,7 @@ Top to bottom:
   button,
   Extended, shows only when the `cria-files-extended` mod is installed and the
   layout has a `files-extended` block. Buttons, tab, space and agent names, and
-  the status bar items carry `.tooltip(text)` labels: names in full, buttons
+  the status bar items carry `.tooltip(text)` labels: names in full (a space adds its grey repo and branch text), buttons
   a few words (the grip says "Resize window"; the pane close and zoom boxes
   say "Close pane" and "Zoom pane").
 - **Pane**, white, 1px black border, no radius. Header 26px: a 14px close

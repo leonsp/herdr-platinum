@@ -20,6 +20,12 @@ function find(node, id) {
 }
 
 // The sidebar's rail goes by its width, not a flag: dragging its edge narrows it too.
+// Platinum push button: black outline, white top-left, grey bottom-right.
+// The caller adds the id, tooltip and click.
+const bevelBox = (t, kid) => div().flex_none().rounded(3).border_1().border_color("#000000").bg("#808080")
+  .child(div().pr(1).pb(1).rounded(2).bg("#808080").child(div().pt(1).pl(1).rounded(2).bg("#ffffff")
+    .child(div().w(20).h(16).flex().items_center().justify_center().bg(t.chrome).hover((s) => s.bg(t.hover)).child(kid))));
+
 const narrow = () => (find(layout(), "sidebar")?.size?.px ?? Infinity) < 160;
 
 // To the rail (on macOS wide enough for the traffic lights), or back to the width it had.
@@ -449,21 +455,11 @@ export default class Agents extends View {
             .child(div().px(10).h(20).flex().items_center().bg(t.chrome).font_family("Lucida Grande").font_bold().text_size(14).text_color(t.foreground).child("Agents"))
             .child(div().flex_1())
             .child(
-              div()
+              bevelBox(t, svg(`mods/workspace-chrome/${sort.icon}.svg`).size(12).text_color(t.foreground))
                 .id("ag-sort")
-                .size(20)
-                .flex_none()
                 .mr(6)
-                .flex()
-                .items_center()
-                .justify_center()
-                .bg(t.chrome)
-                .text_size(14)
-                .text_color(t.dim)
-                .hover((s) => s.text_color(t.foreground))
                 .on_click(() => openOverlay({ mod: "platinum-agents", kind: "popup", width: 200, height: 140, props: { sortMenu: true } }))
-                .tooltip(`Sort agents: ${sort.label}`)
-                .child(svg(`mods/workspace-chrome/${sort.icon}.svg`).size(14)),
+                .tooltip(`Sort agents: ${sort.label}`),
             ),
         ),
       )

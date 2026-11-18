@@ -23,6 +23,12 @@ function find(node, id) {
 }
 
 // The sidebar's rail goes by its width, not a flag: dragging its edge narrows it too.
+// Platinum push button: black outline, white top-left, grey bottom-right.
+// The caller adds the id, tooltip and click.
+const bevelBox = (t, kid) => div().flex_none().rounded(3).border_1().border_color("#000000").bg("#808080")
+  .child(div().pr(1).pb(1).rounded(2).bg("#808080").child(div().pt(1).pl(1).rounded(2).bg("#ffffff")
+    .child(div().w(20).h(16).flex().items_center().justify_center().bg(t.chrome).hover((s) => s.bg(t.hover)).child(kid))));
+
 const narrow = () => (find(layout(), "sidebar")?.size?.px ?? Infinity) < 160;
 
 // Where a space is now: its first terminal's live folder, else where it was made.
@@ -428,12 +434,18 @@ export default class Spaces extends View {
   // branch goes when the name already says it (a worktree is named after its branch),
   // and master/main go: nearly every space is on one. When the row is full, it
   // and the name both start from their text's width and give way in proportion.
-  gitTail(g, tree, name, t) {
+  // The grey repo and branch text after a space's name, or "".
+  gitLabel(g, tree, name) {
+    if (!g) return "";
     const raw = g.branch ?? "detached";
     const same = (a) => a.toLowerCase() === name.toLowerCase();
     const branch = same(raw) || raw === "master" || raw === "main" ? "" : raw;
     const repo = tree || same(g.name) ? "" : g.name;
-    const where = [repo, branch].filter(Boolean).join(" \u00b7 ");
+    return [repo, branch].filter(Boolean).join(" \u00b7 ");
+  }
+
+  gitTail(g, tree, name, t) {
+    const where = this.gitLabel(g, tree, name);
     return h_flex()
       .flex_auto()
       .min_w(where ? SIDE_MIN : 0)
@@ -456,7 +468,7 @@ export default class Spaces extends View {
     return v_flex()
       .relative()
       .id(`space-${w.id}`)
-      .tooltip(w.name)
+      .tooltip([w.name, this.gitLabel(g, tree, w.name)].filter(Boolean).join(" \u00b7 "))
       .px(8)
       .h(rowHeight({ tree }))
       .flex_none()
@@ -556,9 +568,9 @@ export default class Spaces extends View {
         .when(collapsed, el => el.justify_center())
         // The left spacer matches the + box, so the title sits in the centre.
         .when(!collapsed, el => el.child(div().w(26).flex_none()).child(div().flex_1()).child(div().px(10).h(20).flex().items_center().bg(t.chrome).font_family("Lucida Grande").font_bold().child("Spaces")).child(div().flex_1()))
-        .child(div().id("space-new").size(20).flex_none().flex().items_center().justify_center().rounded(6).bg(t.chrome).hover(s => s.bg(t.hover).text_color(t.foreground))
+        .child(bevelBox(t, svg("mods/workspace-chrome/plus.svg").size(12)).id("space-new")
           .when(!collapsed, el => el.mr(6))
-          .on_click(() => run("space.new")).child(svg("mods/workspace-chrome/plus.svg").size(14))))
+          .on_click(() => run("space.new"))))
       .child(v_flex().flex_1().min_h(0).px(0).pb(14).overflow_y_scrollbar().mode("always").track_scroll(this.scroll)
         // A block above (another mod's) growing, or the window resizing, shrinks this list and can push the active space out.
         .on_size_change((_size, cx) => { if (this.activeAt >= 0) { this.scroll.scroll_to_item(this.activeAt); cx.notify(); } })
