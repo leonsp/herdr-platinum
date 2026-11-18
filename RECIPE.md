@@ -14,7 +14,8 @@ Palette (theme tokens the mods read through `theme()`): chrome and surface
 `#dddddd`, canvas `#b8b8c4`, selected and accent `#9999cc`, hover `#cccccc`,
 border `#777777`, dim and muted `#555555`, input `#ffffff`, foreground
 `#000000`, working `#cc9900`, blocked `#cc0000`, done `#3366cc`. Terminal
-background white. Text is 14px or larger, except the status bar (13px).
+background white. Text is 14px or larger, except the status bar and the
+Spaces and Agents rows (13px).
 UI font Geneva, titles Lucida Grande bold, terminal Monaco 14.
 
 Top to bottom:
@@ -26,8 +27,10 @@ Top to bottom:
   A stripe is a 1px `dim` line over a 1px white line, 1px apart, 4px side
   padding.
 - **Left column**, 240px: Spaces over Agents. Each has a 14px header on a
-  dotted, embossed title bar (an SVG of dots), rows with square selection in
-  `selected`, 14px text.
+  dotted, embossed title bar (an SVG of dots). Rows follow the Mac OS 9
+  Application menu: bold 13px Lucida Grande, 28px high (26px for worktree
+  rows), a `✓` in a 12px slot before the icon on the active space or focused
+  agent, and the `selected` highlight only under the pointer.
 - **Tab bar**, 40px, `chrome`. Tabs 32px tall with slanted sides and rounded
   tops, as in Mac OS 9 tab panels, bold Lucida Grande text, no gap between
   tabs. The active tab is `surface` with a black outline on top and the

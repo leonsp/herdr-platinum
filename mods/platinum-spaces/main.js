@@ -1,7 +1,8 @@
 // Modified copy of Herdr's shipped `spaces` mod, from the Herdr project
 // (https://github.com/herdrdev/herdr), licensed under the Apache License 2.0.
 // See NOTICE. Changes: 14px minimum text, taller rows and header, a square
-// selected row. Behaviour is unchanged.
+// selected row, bold Lucida Grande, a checkmark for the active space and a
+// purple hover, as in the Mac OS 9 Application menu. Behaviour is unchanged.
 //
 // Workspace spaces: stable colored avatars, worktrees under their checkout,
 // grouped by machine when more than one is known. After a space's name, the repo
@@ -30,7 +31,7 @@ function place(s, ps) {
   const tabs = new Set((s.tabs ?? []).map((c) => c.id));
   return ps.find((p) => tabs.has(p.tab) && p.cwd)?.cwd || s.folder;
 }
-const rowHeight = ({ tree }) => (tree ? 32 : 34);
+const rowHeight = ({ tree }) => (tree ? 26 : 28);
 const RAIL_CELL = 32;
 // A space's name and its git tail never shrink below this, so a short one ("api")
 // stays readable instead of turning into an ellipsis next to a long branch.
@@ -439,7 +440,7 @@ export default class Spaces extends View {
       .gap(5)
       .justify_end()
       .items_center()
-      .text_size(14)
+      .text_size(13)
       .text_color(t.dim)
       .when(Boolean(where), (el) => el.child(div().min_w(0).truncate().child(where)))
       .when(g.ahead > 0, (el) => el.child(div().flex_none().text_color(t.ansi2).child(`\u2191${g.ahead}`)))
@@ -460,8 +461,9 @@ export default class Spaces extends View {
       .flex_none()
       .justify_center()
       .rounded(0)
-      .when(on, (el) => el.bg(t.selected))
-      .when(!on, (el) => el.hover((s) => s.bg(t.hover)))
+      // Like the Mac OS 9 Application menu: a checkmark marks the active
+      // space, and only the pointer highlights a row.
+      .hover((s) => s.bg(t.selected))
       .when(this.pressed === w.id && this.over !== w.id, (el) => el.opacity(0.5))
       .when(this.pressed !== null && this.over === w.id && this.pressed !== w.id, (el) => el.child(
         div().absolute().left(0).right(0).h(2).bg(t.accent)
@@ -494,10 +496,14 @@ export default class Spaces extends View {
       .on_mouse_down("right", () => this.menu(w))
       .child(
         h_flex()
-          .gap(9)
+          .gap(6)
           .items_center()
-          .when(Boolean(tree), el => el.pl(22).child(svg("mods/workspace-chrome/branch.svg").size(16).flex_none().text_color(t.dim)))
-          .when(!tree, el => el.child(h_flex().size(22).flex_none().rounded(4).bg(fill).items_center().justify_center().text_size(14).font_bold().text_color("#ffffff").child([...w.name][0]?.toUpperCase() ?? "?")))
+          .text_size(13)
+          .font_family("Lucida Grande")
+          .font_bold()
+          .child(div().w(12).flex_none().text_color(t.foreground).when(on, el => el.child("\u2713")))
+          .when(Boolean(tree), el => el.pl(8).child(svg("mods/workspace-chrome/branch.svg").size(14).flex_none().text_color(t.dim)))
+          .when(!tree, el => el.child(h_flex().size(18).flex_none().rounded(3).bg(fill).items_center().justify_center().text_size(12).font_bold().text_color("#ffffff").child([...w.name][0]?.toUpperCase() ?? "?")))
           .child(div().flex_initial().min_w(SIDE_MIN).truncate().text_color(t.foreground).child(w.name))
           .child(g ? this.gitTail(g, tree, w.name, t) : div().flex_1()),
       );

@@ -1,7 +1,8 @@
 // Modified copy of Herdr's shipped `agents` mod, from the Herdr project
 // (https://github.com/herdrdev/herdr), licensed under the Apache License 2.0.
 // See NOTICE. Changes: 14px minimum text, taller rows and header, square
-// rows. Behaviour is unchanged.
+// rows, bold Lucida Grande, a checkmark for the focused agent and a purple
+// hover, as in the Mac OS 9 Application menu. Behaviour is unchanged.
 //
 // Agents in grouped or priority views; parents take their most urgent sub-agent's place.
 
@@ -194,13 +195,15 @@ export default class Agents extends View {
       .pl(39)
       .pr(8)
       .rounded(0)
-      .h(30)
+      .h(26)
       .flex_none()
       .gap(0)
       .items_center()
-      .text_size(14)
+      .text_size(13)
+      .font_family("Lucida Grande")
+      .font_bold()
       .when(on, (el) => el.bg(t.raised))
-      .hover((s) => s.bg(t.hover))
+      .hover((s) => s.bg(t.selected))
       .on_click(() => (this.listed.has(k.address) ? run("pane.focus", { terminal: k.address }) : this.peek(k.address)))
       .children(s.lines.map(l => div().self_start().mt(-4).w(9).h(17).mr(4).flex_none()
         .when(Boolean(l), el => el.border_l(1.5).border_color(t.input))
@@ -301,7 +304,7 @@ export default class Agents extends View {
     }
 
     const row = (a, i, subs = []) => {
-      const pic = icon(a.program, 16, t.foreground);
+      const pic = icon(a.program, 14, t.foreground);
       const more = detail.get(a.address);
       // An agent on another machine (`vps/t7`) says which.
       const machine = a.address.includes("/") ? a.address.split("/")[0] : null;
@@ -345,20 +348,24 @@ export default class Agents extends View {
       return h_flex()
         .id(`ag-${a.address}`)
         .px(8)
-        .h(34)
+        .h(28)
         .flex_none()
         .rounded(0)
         .items_center()
-        .gap(9)
-        .when(a.focused, (el) => el.bg(t.selected))
+        .gap(6)
+        .text_size(13)
+        .font_family("Lucida Grande")
+        .font_bold()
         .cursor_pointer()
-        .hover((s) => s.bg(t.hover))
+        .hover((s) => s.bg(t.selected))
         .on_hover((on, cx) => {
           if (on) this.hovered = a.address;
           else if (this.hovered === a.address) this.hovered = null;
           cx.notify();
         })
         .on_click(() => run("pane.focus", { pane: a.pane }))
+        // A checkmark marks the focused agent, as in the Mac OS 9 Application menu.
+        .child(div().w(12).flex_none().text_color(t.foreground).when(a.focused, el => el.child("\u2713")))
         .when(Boolean(pic), el => el.child(div().id(`agent-fold-${a.address}`)
           .when(subs.length > 0, el => el.on_click((_e, cx) => {
             cx.stop_propagation();
