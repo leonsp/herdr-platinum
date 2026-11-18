@@ -37,8 +37,8 @@ function clock() {
 }
 
 // Left grey and top grey, right and bottom white: a sunken field.
-function field(t, ...kids) {
-  return div().flex_none().pr(1).pb(1).bg(LIGHT).child(
+function field(t, id, tip, ...kids) {
+  return div().id(id).tooltip(tip).flex_none().pr(1).pb(1).bg(LIGHT).child(
     div().pt(1).pl(1).bg(DARK).child(
       h_flex().h(18).px(8).gap(6).items_center().bg(t.surface).text_size(13).font_family(FONT).text_color(t.foreground).children(kids)));
 }
@@ -87,8 +87,8 @@ export default class PlatinumGrip extends View {
     return lead + tail.join(" › ");
   }
 
-  button(t, id, kid, command, args) {
-    return div().id(id).flex_none().rounded(3).border_1().border_color("#000000").bg(DARK)
+  button(t, id, tip, kid, command, args) {
+    return div().id(id).tooltip(tip).flex_none().rounded(3).border_1().border_color("#000000").bg(DARK)
       .child(
         div().pr(1).pb(1).rounded(2).bg(DARK).child(
           div().pt(1).pl(1).rounded(2).bg(LIGHT).child(
@@ -107,7 +107,7 @@ export default class PlatinumGrip extends View {
     const b = this.branch;
 
     const readouts = [];
-    if (b) readouts.push(field(t, div().child(`${b.name}${b.dirty ? " ✗" : " ✓"}`)));
+    if (b) readouts.push(field(t, "branch", b.dirty ? `Git branch ${b.name}, with uncommitted changes` : `Git branch ${b.name}, clean`, div().child(`${b.name}${b.dirty ? " ✗" : " ✓"}`)));
 
     return h_flex()
       .size_full()
@@ -122,17 +122,18 @@ export default class PlatinumGrip extends View {
       .font_family(FONT)
       .text_color(t.foreground)
       .children([
-        div().flex_1().min_w(0).truncate().child(this.crumbs(cwd)),
+        div().id("crumbs").tooltip(cwd || "No folder").flex_1().min_w(0).truncate().child(this.crumbs(cwd)),
         ...readouts,
-        this.button(t, "split-right", image("mods/platinum-grip/split-right.svg").w(14).h(14), "pane.split", { direction: "right" }),
-        this.button(t, "split-down", image("mods/platinum-grip/split-down.svg").w(14).h(14), "pane.split", { direction: "down" }),
-        this.button(t, "zoom-out", "A−", "app.zoom_out"),
-        field(t, div().child(`${zoom}%`)),
-        this.button(t, "zoom-in", "A+", "app.zoom_in"),
-        this.button(t, "palette", "⌘", "app.palette"),
-        field(t, div().child(clock())),
+        this.button(t, "split-right", "Split the pane to the right", image("mods/platinum-grip/split-right.svg").w(14).h(14), "pane.split", { direction: "right" }),
+        this.button(t, "split-down", "Split the pane downward", image("mods/platinum-grip/split-down.svg").w(14).h(14), "pane.split", { direction: "down" }),
+        this.button(t, "zoom-out", "Make text smaller", "A−", "app.zoom_out"),
+        field(t, "zoom", "Text size", div().child(`${zoom}%`)),
+        this.button(t, "zoom-in", "Make text larger", "A+", "app.zoom_in"),
+        this.button(t, "palette", "Command palette", "⌘", "app.palette"),
+        field(t, "clock", "Current time", div().child(clock())),
         div()
           .id("grip")
+          .tooltip("Resize window")
           .relative()
           .w(14)
           .h(14)

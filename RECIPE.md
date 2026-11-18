@@ -41,13 +41,14 @@ Top to bottom:
   radius 3, white highlight top and left, `#808080` shadow bottom and right
   (same bevel as the status bar buttons). The open panel's button is
   depressed: the bevel is swapped and the face is darker grey `#bbbbbb`.
-  With `cria-file-preview` installed, an `> Open` button sits between `+` and
-  Files. It opens the `platinum-open` dialog (a text field, Cancel, Open
+  With `cria-file-preview` installed, a `> Preview` button sits between `+`
+  and Files. It opens the `platinum-open` dialog (a text field, Cancel, Open
   Split, Open): paste a path, newlines removed, and the file opens in a
   preview tab, or a split pane to the right. An optional panel button,
-  Extended, shows only when the
-  `cria-files-extended` mod is installed and the layout has a `files-extended`
-  block.
+  Extended, shows only when the `cria-files-extended` mod is installed and the
+  layout has a `files-extended` block. Buttons, tab, space and agent names, and
+  the status bar items carry `.tooltip(text)` labels: names in full, buttons
+  a few words (the grip says "Resize window").
 - **Pane**, white, 1px black border, no radius. Header 26px: a 14px close
   box at the left (white, 1px black outline, empty), pinstripes, the title
   centred in bold, pinstripes, a 14px zoom box at the right (same box with a
@@ -202,6 +203,6 @@ before replacing a key they use.
   maximizes or restores the window.
 - The Files panel shows folder and page icons in colour. The Commit button
   in Changes is a bordered rectangle.
-- With `cria-file-preview` installed, the `> Open` button opens a dialog.
+- With `cria-file-preview` installed, the `> Preview` button opens a dialog.
   A pasted path, even with a stray newline, opens in a preview tab (Open) or
   a split pane (Open Split). Without that mod, the button is absent.

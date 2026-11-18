@@ -456,6 +456,7 @@ export default class Spaces extends View {
     return v_flex()
       .relative()
       .id(`space-${w.id}`)
+      .tooltip(w.name)
       .px(8)
       .h(rowHeight({ tree }))
       .flex_none()
@@ -512,6 +513,7 @@ export default class Spaces extends View {
   compact({ w, i }, t) {
     return railCell(h_flex()
       .id(`space-${w.id}`)
+      .tooltip(w.name)
       .relative()
       .w(RAIL_CELL)
       .h(26)

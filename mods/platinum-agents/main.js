@@ -192,6 +192,7 @@ export default class Agents extends View {
     const on = k.address === shown;
     return h_flex()
       .id(`sub-${k.address}`)
+      .tooltip(String(k.name || k.template || k.program?.name || k.address))
       .pl(39)
       .pr(8)
       .rounded(0)
@@ -347,6 +348,7 @@ export default class Agents extends View {
       const name = full ? a.space_name || label(a) : more ?? (/^\d+$/.test(label(a)) ? a.program?.name || label(a) : label(a));
       return h_flex()
         .id(`ag-${a.address}`)
+        .tooltip(full && more ? `${name} · ${more}` : String(name))
         .px(8)
         .h(28)
         .flex_none()

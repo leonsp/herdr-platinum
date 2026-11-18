@@ -17,7 +17,7 @@ const FONT = "Lucida Grande";
 // grey shadow on the bottom and right. Pressed swaps the bevel and darkens
 // the face. Elements have no per-edge border colours, so the bevel is nested
 // divs with padding.
-function bevel(t, id, pressed, kids, onClick, small = false) {
+function bevel(t, id, pressed, kids, onClick, small = false, tip = "") {
   const face = h_flex().h(small ? 20 : 24).when(small, el => el.w(24), el => el.px(10)).gap(6).items_center().justify_center()
     .text_size(14).font_family(FONT).font_bold().text_color(t.foreground)
     .bg(pressed ? PRESSED : t.chrome)
@@ -25,6 +25,7 @@ function bevel(t, id, pressed, kids, onClick, small = false) {
     // Extra room after the label, as a spacer: pr() on the face did not show.
     .children(small ? kids : [...kids, div().w(0).h(1).flex_none()]);
   return div().id(id).flex_none().rounded(3).border_1().border_color("#000000").bg(DARK)
+    .when(Boolean(tip), el => el.tooltip(tip))
     .on_mouse_down("left", (_e, cx) => cx.stop_propagation())
     .on_click(onClick)
     .child(div().pr(1).pb(1).rounded(2).bg(pressed ? LIGHT : DARK)
@@ -162,7 +163,7 @@ export default class PlatinumTabs extends View {
         .when(c.status === "working", el => el.child(svg("mods/workspace-chrome/spinner.svg").size(12).flex_none().text_color(t.working).spin(900)))
         .when(c.status === "blocked" || c.status === "done", el => el.child(div().size(8).rounded(4).bg(t[c.status])))
         .when(c.active, el => el.child(div().id(`close-${c.id}`).text_color(t.dim).on_mouse_down("left", stop).on_click((_e, cx) => { cx.stop_propagation(); run("tab.close", { id: c.id }); }).child(svg("mods/pane/close.svg").size(12))));
-      return h_flex().id(`tab-${c.id}`).relative().h(32).items_center().flex_none()
+      return h_flex().id(`tab-${c.id}`).tooltip(String(name)).relative().h(32).items_center().flex_none()
         // A rename or status dot on this or an earlier tab can push the active one out.
         .when(i <= active, el => el.on_size_change((_size, cx) => { this.scroll.scroll_to_item(active); cx.notify(); }))
         .on_mouse_down("left", (e, cx) => { cx.stop_propagation(); this.pressed = i; if (e.click_count === 2) run("tab.rename", { id: c.id }); })
@@ -184,12 +185,12 @@ export default class PlatinumTabs extends View {
     const panel = find(root, "panel"), body = find(root, "panel-body");
     const enabled = shared("workspace.panels") ?? ["files", "changes"];
     this.syncPanel(space, panel, body, enabled);
-    const panelButton = (id, label, icon) => {
+    const panelButton = (id, label, icon, tip) => {
       const on = panel && !panel.hidden && body?.active === id;
       return bevel(t, `panel-${id}`, Boolean(on), [svg(icon).size(16), label], () => {
         if (on) run("layout.hide", { id: "panel" });
         else { run("layout.select", { stack: "panel-body", child: id }); run("layout.show", { id: "panel" }); }
-      });
+      }, false, tip);
     };
     return h_flex().size_full().min_w(0).px(10).pl(lightsPadding).gap(3).items_center().bg(t.chrome)
       .on_mouse_up("left", () => { this.pressed = null; })
@@ -197,11 +198,11 @@ export default class PlatinumTabs extends View {
       .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_end().gap(0).overflow_x_scrollbar().track_scroll(this.scroll)
         .on_size_change((_size, cx) => { if (active >= 0) { this.scroll.scroll_to_item(active); cx.notify(); } })
         .children(shown.map(item)))
-      .child(bevel(t, "tab-new", false, ["+"], () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 }), true))
-      .when(this.preview, el => el.child(bevel(t, "tab-open", false, [">", "Open"], () => openOverlay({ mod: "platinum-open", kind: "dialog", width: 460, height: 184, frame: "none" }))))
-      .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg")))
-      .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg")))
-      .when(this.extended && Boolean(find(root, "files-extended")), el => el.child(panelButton("files-extended", "Extended", "mods/cria-files-extended/icons/folder.svg")))
+      .child(bevel(t, "tab-new", false, ["+"], () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 }), true, "New tab or terminal"))
+      .when(this.preview, el => el.child(bevel(t, "tab-open", false, [">", "Preview"], () => openOverlay({ mod: "platinum-open", kind: "dialog", width: 460, height: 184, frame: "none" }), false, "Open a file by path")))
+      .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg", "Browse files")))
+      .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg", "Review git changes")))
+      .when(this.extended && Boolean(find(root, "files-extended")), el => el.child(panelButton("files-extended", "Extended", "mods/cria-files-extended/icons/folder.svg", "Browse files, with a menu")))
       .when(w?.buttons, el => el.child(button("minimize", w.platform === "windows" ? svg("mods/tabs/win-min.svg").size(16) : "−", () => run("window.minimize")))
         .child(button("maximize", w.platform === "windows" ? svg(`mods/tabs/${w.maximized ? "win-restore" : "win-max"}.svg`).size(16) : "□", () => run("window.maximize")))
         .child(button("close-window", w.platform === "windows" ? svg("mods/tabs/win-close.svg").size(16) : svg("mods/pane/close.svg").size(13), () => run("window.close"))));
