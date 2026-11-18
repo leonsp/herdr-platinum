@@ -5,7 +5,7 @@
 // their colors), square corners, a gray header, lilac row hover.
 import { View, div, svg, image } from "gpui-kit";
 import { v_flex, h_flex, Editor, EditorState } from "gpui-base";
-import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, window } from "herdr";
+import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, window, run } from "herdr";
 
 function location() {
   const space = spaces().find(s => s.active), f = focused();
@@ -46,6 +46,14 @@ export default class PlatinumFiles extends View {
   init(_props, cx) {
     this.saved = new Map();
     this.entries = new Map(); this.folders = new Set(); this.pending = new Set(); this.marks = {};
+    // Files open in cria-file-preview (Markdown, PDF, images, tables, JSON,
+    // code), when that mod is installed.
+    this.preview = false;
+    cx.spawn(async cx => {
+      const r = await exec("sh", ["-c", 'test -d "$HOME/herdr-app/mods/cria-file-preview"']).catch(() => null);
+      this.preview = r?.code === 0;
+      cx.notify();
+    });
     this.refresh(cx);
     cx.timer.every(10000, cx => this.refresh(cx));
   }
@@ -164,7 +172,14 @@ export default class PlatinumFiles extends View {
       out.push(h_flex().id(`file-${path}`).h(30).flex_none().pl(8 + depth * 22).pr(8).gap(7).items_center().rounded(0).cursor_pointer()
         // Zebra stripes, as in the Finder's list view.
         .bg(out.length % 2 ? "#eeeef6" : t.background).hover(s => s.bg(t.selected))
-        .on_click((_e, cx) => entry.dir ? this.toggle(path, cx) : this.show(path, cx))
+        .on_click((_e, cx) => {
+          if (entry.dir) return this.toggle(path, cx);
+          if (this.preview) {
+            const file = `${this.root}/${path}`;
+            return run("tab.new", { name: entry.name, mod: "cria-file-preview", props: { file, on: this.on } });
+          }
+          this.show(path, cx);
+        })
         // Solid disclosure triangles, as in the Finder.
         .child(entry.dir ? div().w(16).flex_none().text_size(14).text_color(t.foreground).child(open ? "▼" : "▶") : div().w(16).flex_none())
         .child(this.icon(entry, open))
