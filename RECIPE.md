@@ -48,7 +48,8 @@ Top to bottom:
   Extended, shows only when the `cria-files-extended` mod is installed and the
   layout has a `files-extended` block. Buttons, tab, space and agent names, and
   the status bar items carry `.tooltip(text)` labels: names in full, buttons
-  a few words (the grip says "Resize window").
+  a few words (the grip says "Resize window"; the pane close and zoom boxes
+  say "Close pane" and "Zoom pane").
 - **Pane**, white, 1px black border, no radius. Header 26px: a 14px close
   box at the left (white, 1px black outline, empty), pinstripes, the title
   centred in bold, pinstripes, a 14px zoom box at the right (same box with a

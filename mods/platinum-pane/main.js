@@ -24,9 +24,10 @@ export default class PlatinumPane extends View {
 
   // The close box is empty; the zoom box holds a small inner square, as in
   // Platinum.
-  box(t, id, command, args, inner) {
+  box(t, id, tip, command, args, inner) {
     return div()
       .id(id)
+      .tooltip(tip)
       .w(BOX)
       .h(BOX)
       .flex_none()
@@ -56,11 +57,11 @@ export default class PlatinumPane extends View {
 
     const kids = p.focused
       ? [
-          this.box(t, `close-${pane}`, "pane.close", { pane }),
+          this.box(t, `close-${pane}`, "Close pane", "pane.close", { pane }),
           this.stripes(t),
           div().flex_none().truncate().max_w(320).px(8).font_family("Lucida Grande").font_bold().text_color(t.foreground).child(name),
           this.stripes(t),
-          this.box(t, `zoom-${pane}`, "pane.zoom", { pane }, true),
+          this.box(t, `zoom-${pane}`, "Zoom pane", "pane.zoom", { pane }, true),
         ]
       : [
           div().w(BOX).h(BOX).flex_none(),
