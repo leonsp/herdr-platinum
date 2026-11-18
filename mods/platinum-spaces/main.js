@@ -551,7 +551,7 @@ export default class Spaces extends View {
       if (this.activeAt >= 0) this.scroll.scroll_to_item(this.activeAt);
     }
     return v_flex().size_full().min_h(0).bg(t.chrome).text_size(14)
-      .child(h_flex().relative().overflow_hidden().flex_none().h(37).items_center().text_size(14).text_color(t.foreground)
+      .child(h_flex().relative().overflow_hidden().flex_none().h(37).border_b(1).border_color(t.border).items_center().text_size(14).text_color(t.foreground)
         .child(image("mods/platinum-spaces/dots-emboss-tall.svg").absolute().top(0).left(0).w(640).h(48))
         .when(collapsed, el => el.justify_center())
         // The left spacer matches the + box, so the title sits in the centre.

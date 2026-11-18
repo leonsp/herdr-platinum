@@ -439,6 +439,8 @@ export default class Agents extends View {
             .overflow_hidden()
             .flex_none()
             .h(32)
+            .border_b(1)
+            .border_color(t.border)
             .items_center()
             .child(image("mods/platinum-agents/dots-emboss.svg").absolute().top(0).left(0).w(640).h(36))
             // The left spacer matches the sort box, so the title sits in the centre.

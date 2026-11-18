@@ -27,7 +27,8 @@ Top to bottom:
   A stripe is a 1px `dim` line over a 1px white line, 1px apart, 4px side
   padding.
 - **Left column**, 240px: Spaces over Agents. Each has a 14px header on a
-  dotted, embossed title bar (an SVG of dots). Rows follow the Mac OS 9
+  dotted, embossed title bar (an SVG of dots) with a 1px `border` line under
+  it. Rows follow the Mac OS 9
   Application menu: bold 13px Lucida Grande, 28px high (26px for worktree
   rows), a `✓` in a 12px slot before the icon on the active space or focused
   agent, and the `selected` highlight only under the pointer.
