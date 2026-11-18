@@ -50,7 +50,7 @@ export default class PlatinumFiles extends View {
     // code), when that mod is installed.
     this.preview = false;
     cx.spawn(async cx => {
-      const r = await exec("sh", ["-c", 'test -d "$HOME/herdr-app/mods/cria-file-preview"']).catch(() => null);
+      const r = await exec("sh", ["-c", 'test -d "${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/cria-file-preview"']).catch(() => null);
       this.preview = r?.code === 0;
       cx.notify();
     });
