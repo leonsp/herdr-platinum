@@ -28,9 +28,11 @@ Top to bottom:
 - **Left column**, 240px: Spaces over Agents. Each has a 14px header on a
   dotted, embossed title bar (an SVG of dots), rows with square selection in
   `selected`, 14px text.
-- **Tab bar**, 40px, `chrome`. Tabs 32px tall, top corners 7px. The active
-  tab is `surface` with a black outline on top, left and right only, so it
-  joins the pane below. Inactive tabs are `chrome` with `muted` text. After
+- **Tab bar**, 40px, `chrome`. Tabs 32px tall with slanted sides and rounded
+  tops, as in Mac OS 9 tab panels, bold Lucida Grande text, no gap between
+  tabs. The active tab is `surface` with a black outline on top and the
+  slants, open at the bottom so it joins the pane below. Inactive tabs are
+  `#bbbbbb` with the same outline. After
   the tabs: a `+` button (24x20), then Files and Changes panel buttons (24px
   high). These are Platinum push buttons, bold 14px text, black 1px outline,
   radius 3, white highlight top and left, `#808080` shadow bottom and right
@@ -119,7 +121,10 @@ Mods:
   `exec` for git and read files, and the tabs mod draws Herdr's own
   `mods/workspace-chrome/spinner.svg` and `mods/pane/close.svg`.
   Art: `titlebar-dots.svg`, `dots-emboss.svg`, `dots-emboss-tall.svg`
-  (dotted title bars), `folder-closed.svg`, `folder-open.svg`, `file.svg`.
+  (dotted title bars), `folder-closed.svg`, `folder-open.svg`, `file.svg`,
+  and `tab-left-fill.svg`, `tab-left-line.svg`, `tab-right-fill.svg`,
+  `tab-right-line.svg` (14x32 tab caps). SVGs are one-colour masks tinted by
+  `text_color`, so each cap is a fill layer and an outline layer.
 - `platinum-grip`: the status bar. `herdr` functions: `exec`, `focused`,
   `panes`, `run`, `settings`, `spaces`, `theme`. Runs
   `git --no-optional-locks status --porcelain=v1 -b -uno` in the focused

@@ -134,12 +134,26 @@ export default class PlatinumTabs extends View {
       const lead = panes().find(p => p.tab === c.id && p.program?.agent) ?? panes().find(p => p.tab === c.id);
       const program = lead?.program;
       const name = label(c, lead);
-      return h_flex().id(`tab-${c.id}`).relative().h(32).px(12).gap(8).rounded_tl(7).rounded_tr(7).items_center().flex_none().text_size(14)
+      // Slanted caps (SVG) on each side of a flat body, as in Mac OS 9
+      // Platinum tab panels. The active tab is the pane colour, the others
+      // are a darker grey.
+      const face = c.active ? t.surface : PRESSED;
+      // SVGs are masks tinted by text_color, so the fill and the outline are
+      // two layers.
+      const cap = (side, color) => div().relative().w(14).h(32).flex_none()
+        .child(svg(`mods/platinum-tabs/tab-${side}-fill.svg`).w(14).h(32).text_color(color))
+        .child(svg(`mods/platinum-tabs/tab-${side}-line.svg`).absolute().inset_0().w(14).h(32).text_color("#000000"));
+      const body = h_flex().h_full().px(2).gap(8).items_center().flex_none()
+        .text_size(14).font_family(FONT).font_bold()
+        .border_t(1).border_color("#000000").bg(face).text_color(t.foreground)
+        .when(Boolean(program?.icon), el => el.child(program.tint ? svg(program.icon).size(16).text_color(t.muted) : image(program.icon).size(16)))
+        .child(div().max_w(170).truncate().child(c.zoomed ? `${name} Z` : name))
+        .when(c.status === "working", el => el.child(svg("mods/workspace-chrome/spinner.svg").size(12).flex_none().text_color(t.working).spin(900)))
+        .when(c.status === "blocked" || c.status === "done", el => el.child(div().size(8).rounded(4).bg(t[c.status])))
+        .when(c.active, el => el.child(div().id(`close-${c.id}`).text_color(t.dim).on_mouse_down("left", stop).on_click((_e, cx) => { cx.stop_propagation(); run("tab.close", { id: c.id }); }).child(svg("mods/pane/close.svg").size(12))));
+      return h_flex().id(`tab-${c.id}`).relative().h(32).items_center().flex_none()
         // A rename or status dot on this or an earlier tab can push the active one out.
         .when(i <= active, el => el.on_size_change((_size, cx) => { this.scroll.scroll_to_item(active); cx.notify(); }))
-        .when(c.active, el => el.border_t(1).border_l(1).border_r(1), el => el.border(1))
-        .border_color(c.active ? t.foreground : t.chrome).bg(c.active ? t.surface : t.chrome).text_color(c.active ? t.foreground : t.muted)
-        .hover(s => s.bg(c.active ? t.surface : t.hover))
         .on_mouse_down("left", (e, cx) => { cx.stop_propagation(); this.pressed = i; if (e.click_count === 2) run("tab.rename", { id: c.id }); })
         .on_mouse_up("left", () => {
           const from = this.pressed; this.pressed = null;
@@ -147,11 +161,9 @@ export default class PlatinumTabs extends View {
           else run("tab.select", { id: c.id });
         })
         .on_mouse_down("right", (_e, cx) => { cx.stop_propagation(); openOverlay({ mod: "menu", kind: "popup", width: 200, props: { tab: "tab", target: { id: c.id, space: space.id } } }); })
-        .when(Boolean(program?.icon), el => el.child(program.tint ? svg(program.icon).size(16).text_color(t.muted) : image(program.icon).size(16)))
-        .child(div().max_w(170).truncate().child(c.zoomed ? `${name} Z` : name))
-        .when(c.status === "working", el => el.child(svg("mods/workspace-chrome/spinner.svg").size(12).flex_none().text_color(t.working).spin(900)))
-        .when(c.status === "blocked" || c.status === "done", el => el.child(div().size(8).rounded(4).bg(t[c.status])))
-        .when(c.active, el => el.child(div().id(`close-${c.id}`).text_color(t.dim).on_mouse_down("left", stop).on_click((_e, cx) => { cx.stop_propagation(); run("tab.close", { id: c.id }); }).child(svg("mods/pane/close.svg").size(12))));
+        .child(cap("left", face))
+        .child(body)
+        .child(cap("right", face));
     };
     const root = layout(), sidebar = find(root, "sidebar"), w = window();
     // Old saved rails and a dragged-narrow sidebar can be smaller than the window buttons.
@@ -171,7 +183,7 @@ export default class PlatinumTabs extends View {
     return h_flex().size_full().min_w(0).px(10).pl(lightsPadding).gap(3).items_center().bg(t.chrome)
       .on_mouse_up("left", () => { this.pressed = null; })
       .on_scroll_wheel(e => this.wheel(e))
-      .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_end().gap(3).overflow_x_scrollbar().track_scroll(this.scroll)
+      .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_end().gap(0).overflow_x_scrollbar().track_scroll(this.scroll)
         .on_size_change((_size, cx) => { if (active >= 0) { this.scroll.scroll_to_item(active); cx.notify(); } })
         .children(shown.map(item)))
       .child(bevel(t, "tab-new", false, ["+"], () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 }), true))
