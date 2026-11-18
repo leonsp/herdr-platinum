@@ -12,7 +12,7 @@ const FONT = "Lucida Grande";
 // "/a/b\n/c.md" (a path wrapped across lines) -> "/a/b/c.md". Also drops
 // surrounding quotes and a file:// prefix, and expands a leading ~.
 export function cleanPath(text, home = "", base = "") {
-  let p = (text ?? "").replace(/[\r\n\u2028\u2029]+/g, "").trim();
+  let p = (text ?? "").replace(/[\r\n\u2028\u2029]+\s*/g, "").replace(/\s{2,}/g, "").trim();
   p = p.replace(/^(["'`])(.*)\1$/, "$2").trim();
   if (/^file:\/\//i.test(p)) {
     p = p.replace(/^file:\/\//i, "");
