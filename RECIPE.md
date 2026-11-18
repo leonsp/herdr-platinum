@@ -41,7 +41,11 @@ Top to bottom:
   radius 3, white highlight top and left, `#808080` shadow bottom and right
   (same bevel as the status bar buttons). The open panel's button is
   depressed: the bevel is swapped and the face is darker grey `#bbbbbb`.
-  An optional third panel button, Extended, shows only when the
+  With `cria-file-preview` installed, an `> Open` button sits between `+` and
+  Files. It opens the `platinum-open` dialog (a text field, Cancel, Open
+  Split, Open): paste a path, newlines removed, and the file opens in a
+  preview tab, or a split pane to the right. An optional panel button,
+  Extended, shows only when the
   `cria-files-extended` mod is installed and the layout has a `files-extended`
   block.
 - **Pane**, white, 1px black border, no radius. Header 26px: a 14px close
@@ -148,6 +152,8 @@ Optional mods (gsydler/herdr-cria). Each is detected by a folder check in
 
 - `cria-file-preview`: a click on a file in `platinum-files` opens it in a
   preview tab (`tab.new` with `mod` and `props` `{file, on}`).
+- `platinum-open` (in this repo, needs `cria-file-preview`): the open-by-path
+  dialog. Same folder layout as the other mods; no layout block needed.
 - `cria-files-extended`: a Files panel with a right-click menu and file icons.
   Add `{ "id": "files-extended", "type": "block", "content": { "mod":
   "cria-files-extended" } }` to the `panel-body` stack (see

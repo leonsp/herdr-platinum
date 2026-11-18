@@ -64,10 +64,14 @@ export default class PlatinumTabs extends View {
     if (!this.panels || typeof this.panels !== "object" || Array.isArray(this.panels)) this.panels = {};
     this.swipe = { acc: 0, steps: 0, at: 0, last: 0 };
     // The Files Extended button shows only when that mod is installed.
+    // The open-by-path button shows only when cria-file-preview is installed.
     this.extended = false;
+    this.preview = false;
+    const installed = (name) => exec("sh", ["-c", `test -d "\${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/${name}"`])
+      .then(r => r?.code === 0).catch(() => false);
     cx.spawn(async cx => {
-      const r = await exec("sh", ["-c", 'test -d "${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/cria-files-extended"']).catch(() => null);
-      this.extended = r?.code === 0;
+      this.extended = await installed("cria-files-extended");
+      this.preview = await installed("cria-file-preview");
       cx.notify();
     });
   }
@@ -194,6 +198,7 @@ export default class PlatinumTabs extends View {
         .on_size_change((_size, cx) => { if (active >= 0) { this.scroll.scroll_to_item(active); cx.notify(); } })
         .children(shown.map(item)))
       .child(bevel(t, "tab-new", false, ["+"], () => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 }), true))
+      .when(this.preview, el => el.child(bevel(t, "tab-open", false, [">", "Open"], () => openOverlay({ mod: "platinum-open", kind: "dialog", width: 460, height: 184, frame: "none" }))))
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg")))
       .when(this.extended && Boolean(find(root, "files-extended")), el => el.child(panelButton("files-extended", "Extended", "mods/cria-files-extended/icons/folder.svg")))
