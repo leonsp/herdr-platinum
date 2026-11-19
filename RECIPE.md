@@ -20,7 +20,8 @@ UI font Geneva, titles Lucida Grande bold, terminal Monaco 14.
 
 Top to bottom:
 
-- **Window bar**, 28px, `chrome`, 1px `border` underneath. Left gap of
+- **Window bar**, 28px, `chrome`, raised bevel (white 2px top and left, grey
+  2px bottom, grey 1px right), 1px `border` underneath. Left gap of
   78px (divided by UI zoom) clears the macOS window buttons. Then five
   embossed stripes, the active space's name centred (bold, max 320px,
   truncated), five more stripes, and a right gap 8px shorter than the left.
@@ -57,14 +58,16 @@ Top to bottom:
   a few words (the grip says "Resize window"; the pane close and zoom boxes
   say "Close pane" and "Zoom pane").
 - **Pane**, white, 1px black border, no radius. Header 26px with a raised
-  2px bevel (white top and left, grey `#808080` bottom and right): a 14px close
-  box at the left (white, 1px black outline, empty), pinstripes, the title
-  centred in bold, pinstripes, a 14px zoom box at the right (same box with a
-  6px inner square). Only the focused pane has stripes and boxes. An
+  bevel (white 2px top and left, grey `#808080` 2px bottom and 1px right): a
+  14px close box at the left (1px black outline, sunken 1px bevel, face
+  darkening downwards in five bands of black at rising alpha, empty),
+  pinstripes, the title centred in bold, pinstripes, a 14px zoom box at the
+  right (same box with a 6px inner square). Only the focused pane has stripes and boxes. An
   unfocused pane has a plain `surface` title in `muted`.
-- **Panel frames**: Spaces, Agents and the right panel each sit in a sunken
-  2px bevel (grey `#808080` top and left, white bottom and right), drawn by
-  the `frame` helper that wraps the mod's render.
+- **Panel bevels**, 2px. The Spaces and Agents title strips are raised (1px
+  grey on the right) and their lists are sunken (grey `#808080` top and
+  left, white bottom and right), with the list on `chrome`, via `raised` and `sunken` helpers. The right panel (Files, Changes)
+  sits in a sunken `frame`.
 - **Right panel**, 320px, hidden until opened: Files or Changes, same dotted
   title bar. Files uses full-colour folder (closed and open) and page icons,
   square corners, lilac row hover. Changes has a grey header, square

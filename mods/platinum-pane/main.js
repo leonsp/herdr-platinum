@@ -7,6 +7,10 @@ import { panes, props, run, theme } from "herdr";
 
 const STRIPES = 5;
 const BOX = 14;
+// Face of a box inside its border and 1px bevel, and the darkest row's alpha.
+const FACE = BOX - 4;
+const SHADE = 0x4d;
+const BANDS = 5;
 
 export default class PlatinumPane extends View {
   me() {
@@ -23,27 +27,48 @@ export default class PlatinumPane extends View {
   }
 
   // The close box is empty; the zoom box holds a small inner square, as in
-  // Platinum.
+  // Platinum. Each is a sunken 1px bevel with a face that darkens towards the
+  // bottom. The kit can only fill an element with a flat colour, so the
+  // gradient is bands of black at rising alpha over the face colour. That keeps
+  // the hover tint, which changes the face colour beneath.
   box(t, id, tip, command, args, inner) {
+    const rows = [];
+    for (let i = 0; i < BANDS; i++) {
+      const alpha = Math.round((i / (BANDS - 1)) * SHADE).toString(16).padStart(2, "0");
+      rows.push(div().h(FACE / BANDS).w_full().bg(`#000000${alpha}`));
+    }
     return div()
       .id(id)
       .tooltip(tip)
       .w(BOX)
       .h(BOX)
       .flex_none()
-      .flex()
-      .items_center()
-      .justify_center()
-      .bg(t.input)
       .border(1)
       .border_color(t.foreground)
-      .hover((s) => s.bg(t.accent))
+      .bg("#808080")
       .on_click((_e, cx) => {
         cx.stop_propagation();
         run(command, args);
       })
-      .when(Boolean(inner), (el) =>
-        el.child(div().w(6).h(6).border(1).border_color(t.foreground)));
+      .child(
+        div().size_full().bg("#ffffff").pr(1).pb(1).child(
+          div().size_full().bg("#808080").pt(1).pl(1).child(
+            div()
+              .id(`${id}-face`)
+              .size_full()
+              .relative()
+              .flex()
+              .items_center()
+              .justify_center()
+              .bg(t.input)
+              .hover((s) => s.bg(t.accent))
+              .child(v_flex().absolute().inset_0().children(rows))
+              .when(Boolean(inner), (el) =>
+                el.child(div().w(6).h(6).border(1).border_color(t.foreground)),
+              ),
+          ),
+        ),
+      );
   }
 
   // The tooltip shows the whole title when the header cuts it short.
@@ -86,12 +111,12 @@ export default class PlatinumPane extends View {
           div().w(BOX).h(BOX).flex_none(),
         ];
 
-    // A raised 2px bevel around the header: white on the top and left, grey on
-    // the bottom and right. Nested divs, as elements have no per-edge colours.
+    // A raised bevel around the header: white 2px on the top and left, grey 2px
+    // on the bottom and 1px on the right. Nested divs, as elements have no per-edge colours.
     return div()
       .size_full()
       .bg("#808080")
-      .pr(2)
+      .pr(1)
       .pb(2)
       .border_b(1)
       .border_color(t.border)

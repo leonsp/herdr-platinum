@@ -74,10 +74,12 @@ export function tone(t, status) {
   return t[status] ?? t.unknown;
 }
 
-// Platinum panel frame: a 2px sunken bevel, grey on the top and left, white on
-// the bottom and right. Elements have no per-edge border colours, so it is
-// nested divs with padding.
-const frame = (kid) => div().size_full().min_h(0).bg("#808080").pt(2).pl(2)
+// Platinum bevels, 2px (raised is 1px on the right). Raised: white on the top and left, grey on the bottom
+// and right. Sunken is the reverse. Elements have no per-edge border colours,
+// so they are nested divs with padding.
+const raised = (kid) => div().size_full().bg("#808080").pr(1).pb(2)
+  .child(div().size_full().bg("#ffffff").pt(2).pl(2).child(kid));
+const sunken = (kid) => div().size_full().min_h(0).bg("#808080").pt(2).pl(2)
   .child(div().size_full().min_h(0).bg("#ffffff").pr(2).pb(2).child(kid));
 
 export default class Spaces extends View {
@@ -546,10 +548,6 @@ export default class Spaces extends View {
   }
 
   render() {
-    return frame(this.content());
-  }
-
-  content() {
     const t = theme();
     const collapsed = narrow();
     const palette = ["ansi6", "ansi3", "ansi4", "ansi5", "ansi2", "ansi1"];
@@ -573,7 +571,7 @@ export default class Spaces extends View {
       if (this.activeAt >= 0) this.scroll.scroll_to_item(this.activeAt);
     }
     return v_flex().size_full().min_h(0).bg(t.chrome).text_size(14)
-      .child(h_flex().relative().overflow_hidden().flex_none().h(37).border_b(1).border_color(t.border).items_center().text_size(14).text_color(t.foreground)
+      .child(div().flex_none().h(37).child(raised(h_flex().relative().overflow_hidden().size_full().items_center().text_size(14).text_color(t.foreground)
         .child(image("mods/platinum-spaces/dots-emboss-tall.svg").absolute().top(0).left(0).w(640).h(48))
         .when(collapsed, el => el.justify_center())
         // The left spacer matches the + box, so the title sits in the centre.
@@ -581,11 +579,11 @@ export default class Spaces extends View {
         .child(bevelBox(t, svg("mods/workspace-chrome/plus.svg").size(12)).id("space-new")
           .tooltip("New space")
           .when(!collapsed, el => el.mr(6))
-          .on_click(() => run("space.new"))))
-      .child(v_flex().flex_1().min_h(0).px(0).pb(14).overflow_y_scrollbar().mode("always").track_scroll(this.scroll)
+          .on_click(() => run("space.new"))))))
+      .child(div().flex_1().min_h(0).child(sunken(v_flex().size_full().min_h(0).bg(t.chrome).px(0).pb(14).overflow_y_scrollbar().mode("always").track_scroll(this.scroll)
         // A block above (another mod's) growing, or the window resizing, shrinks this list and can push the active space out.
         .on_size_change((_size, cx) => { if (this.activeAt >= 0) { this.scroll.scroll_to_item(this.activeAt); cx.notify(); } })
         .on_mouse_up("left", (_e, cx) => { this.pressed = null; cx.notify(); })
-        .children(list));
+        .children(list))));
   }
 }

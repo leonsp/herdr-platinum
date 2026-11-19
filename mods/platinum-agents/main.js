@@ -90,10 +90,12 @@ function icon(p, size, color) {
   return p.tint ? svg(p.icon).size(size).flex_none().text_color(color) : image(p.icon).w(size).h(size).flex_none();
 }
 
-// Platinum panel frame: a 2px sunken bevel, grey on the top and left, white on
-// the bottom and right. Elements have no per-edge border colours, so it is
-// nested divs with padding.
-const frame = (kid) => div().size_full().min_h(0).bg("#808080").pt(2).pl(2)
+// Platinum bevels, 2px (raised is 1px on the right). Raised: white on the top and left, grey on the bottom
+// and right. Sunken is the reverse. Elements have no per-edge border colours,
+// so they are nested divs with padding.
+const raised = (kid) => div().size_full().bg("#808080").pr(1).pb(2)
+  .child(div().size_full().bg("#ffffff").pt(2).pl(2).child(kid));
+const sunken = (kid) => div().size_full().min_h(0).bg("#808080").pt(2).pl(2)
   .child(div().size_full().min_h(0).bg("#ffffff").pr(2).pb(2).child(kid));
 
 export default class Agents extends View {
@@ -238,10 +240,6 @@ export default class Agents extends View {
   }
 
   render(cx) {
-    return frame(this.content(cx));
-  }
-
-  content(cx) {
     const t = theme();
     if (props()?.sortMenu) return this.sortMenu(t);
     const collapsed = narrow();
@@ -450,13 +448,10 @@ export default class Agents extends View {
       .text_size(14)
       .when(!collapsed, (el) =>
         el.child(
-          h_flex()
+          div().flex_none().h(32).child(raised(h_flex()
             .relative()
             .overflow_hidden()
-            .flex_none()
-            .h(32)
-            .border_b(1)
-            .border_color(t.border)
+            .size_full()
             .items_center()
             .child(image("mods/platinum-agents/dots-emboss.svg").absolute().top(0).left(0).w(640).h(36))
             // The left spacer matches the sort box, so the title sits in the centre.
@@ -470,13 +465,13 @@ export default class Agents extends View {
                 .mr(6)
                 .on_click(() => openOverlay({ mod: "platinum-agents", kind: "popup", width: 200, height: 140, props: { sortMenu: true } }))
                 .tooltip(`Sort agents: ${sort.label}`),
-            ),
+            ))),
         ),
       )
       .when(list.length === 0 && !collapsed, (el) =>
         el.child(div().px(12).text_size(14).text_color(t.dim).child("No agent status yet. Agents show up here when they report their status. Older versions and agents inside tmux may not.")),
       )
-      .child(v_flex().id("ag-list").flex_1().min_h(0).px(0).overflow_y_scrollbar().mode("always").children(rows))
+      .child(div().flex_1().min_h(0).child(sunken(v_flex().id("ag-list").size_full().min_h(0).bg(t.chrome).px(0).overflow_y_scrollbar().mode("always").children(rows))))
       .when(collapsed, (el) =>
         el.child(
           h_flex()
