@@ -5,6 +5,7 @@
   "font": "Monaco",
   "font_size": 14,
   "ui_font": "Geneva",
+  "terminal_menu": "platinum-menu",
   "titlebar": "none",
   "traffic_lights": [14, 7],
   "children": [
