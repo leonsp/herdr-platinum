@@ -74,6 +74,12 @@ export function tone(t, status) {
   return t[status] ?? t.unknown;
 }
 
+// Platinum panel frame: a 2px sunken bevel, grey on the top and left, white on
+// the bottom and right. Elements have no per-edge border colours, so it is
+// nested divs with padding.
+const frame = (kid) => div().size_full().min_h(0).bg("#808080").pt(2).pl(2)
+  .child(div().size_full().min_h(0).bg("#ffffff").pr(2).pb(2).child(kid));
+
 export default class Spaces extends View {
   init(_props, cx) {
     this.git = {}; // where() -> { name, branch, ahead, behind, repo, linked }, null: not a repo
@@ -540,6 +546,10 @@ export default class Spaces extends View {
   }
 
   render() {
+    return frame(this.content());
+  }
+
+  content() {
     const t = theme();
     const collapsed = narrow();
     const palette = ["ansi6", "ansi3", "ansi4", "ansi5", "ansi2", "ansi1"];

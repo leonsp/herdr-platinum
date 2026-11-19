@@ -90,6 +90,12 @@ function icon(p, size, color) {
   return p.tint ? svg(p.icon).size(size).flex_none().text_color(color) : image(p.icon).w(size).h(size).flex_none();
 }
 
+// Platinum panel frame: a 2px sunken bevel, grey on the top and left, white on
+// the bottom and right. Elements have no per-edge border colours, so it is
+// nested divs with padding.
+const frame = (kid) => div().size_full().min_h(0).bg("#808080").pt(2).pl(2)
+  .child(div().size_full().min_h(0).bg("#ffffff").pr(2).pb(2).child(kid));
+
 export default class Agents extends View {
   init(_props, cx) {
     if (props()?.sortMenu) return;
@@ -232,6 +238,10 @@ export default class Agents extends View {
   }
 
   render(cx) {
+    return frame(this.content(cx));
+  }
+
+  content(cx) {
     const t = theme();
     if (props()?.sortMenu) return this.sortMenu(t);
     const collapsed = narrow();

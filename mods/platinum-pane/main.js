@@ -86,17 +86,33 @@ export default class PlatinumPane extends View {
           div().w(BOX).h(BOX).flex_none(),
         ];
 
-    return h_flex()
-      .id(`pane-head-${pane}`)
+    // A raised 2px bevel around the header: white on the top and left, grey on
+    // the bottom and right. Nested divs, as elements have no per-edge colours.
+    return div()
       .size_full()
-      .items_center()
-      .px(6)
-      .gap(2)
-      .bg(t.surface)
+      .bg("#808080")
+      .pr(2)
+      .pb(2)
       .border_b(1)
       .border_color(t.border)
-      .text_size(14)
-      .on_click(() => run("pane.focus", { pane }))
-      .children(kids);
+      .child(
+        div()
+          .size_full()
+          .bg("#ffffff")
+          .pt(2)
+          .pl(2)
+          .child(
+            h_flex()
+              .id(`pane-head-${pane}`)
+              .size_full()
+              .items_center()
+              .px(4)
+              .gap(2)
+              .bg(t.surface)
+              .text_size(14)
+              .on_click(() => run("pane.focus", { pane }))
+              .children(kids),
+          ),
+      );
   }
 }

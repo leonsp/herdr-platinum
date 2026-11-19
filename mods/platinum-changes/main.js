@@ -36,6 +36,12 @@ function diffRows(lines) {
   });
 }
 
+// Platinum panel frame: a 2px sunken bevel, grey on the top and left, white on
+// the bottom and right. Elements have no per-edge border colours, so it is
+// nested divs with padding.
+const frame = (kid) => div().size_full().min_h(0).bg("#808080").pt(2).pl(2)
+  .child(div().size_full().min_h(0).bg("#ffffff").pr(2).pb(2).child(kid));
+
 export default class PlatinumChanges extends View {
   init(_props, cx) {
     this.files = []; this.rows = []; this.diffWidth = 0; this.message = ""; this.handle = cx.focus_handle();
@@ -197,6 +203,10 @@ export default class PlatinumChanges extends View {
   }
 
   render(cx) {
+    return frame(this.content(cx));
+  }
+
+  content(cx) {
     if (key() !== this.context) this.refresh(cx);
     const t = theme(), add = this.files.reduce((n, f) => n + f.add, 0), del = this.files.reduce((n, f) => n + f.del, 0);
     const enabled = Boolean(this.message.trim() && this.root && !this.busy && !this.loading);

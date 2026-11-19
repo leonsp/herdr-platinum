@@ -56,11 +56,15 @@ Top to bottom:
   the status bar items carry `.tooltip(text)` labels: names in full (a space adds its grey repo and branch text), buttons
   a few words (the grip says "Resize window"; the pane close and zoom boxes
   say "Close pane" and "Zoom pane").
-- **Pane**, white, 1px black border, no radius. Header 26px: a 14px close
+- **Pane**, white, 1px black border, no radius. Header 26px with a raised
+  2px bevel (white top and left, grey `#808080` bottom and right): a 14px close
   box at the left (white, 1px black outline, empty), pinstripes, the title
   centred in bold, pinstripes, a 14px zoom box at the right (same box with a
   6px inner square). Only the focused pane has stripes and boxes. An
   unfocused pane has a plain `surface` title in `muted`.
+- **Panel frames**: Spaces, Agents and the right panel each sit in a sunken
+  2px bevel (grey `#808080` top and left, white bottom and right), drawn by
+  the `frame` helper that wraps the mod's render.
 - **Right panel**, 320px, hidden until opened: Files or Changes, same dotted
   title bar. Files uses full-colour folder (closed and open) and page icons,
   square corners, lilac row hover. Changes has a grey header, square
