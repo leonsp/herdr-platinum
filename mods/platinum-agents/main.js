@@ -159,28 +159,36 @@ export default class Agents extends View {
 
   sortMenu(t) {
     const on = sortOf().id;
-    return v_flex()
-      .w_full()
-      .p(5)
-      .bg(t.popover)
+    // Mac OS 9 menu: black outline, white inner highlight, grey face, blue
+    // selection with white text, a check mark for the current choice.
+    const rows = SORTS.map((s) => h_flex()
+      .id(`sort-${s.id}`)
+      .h(22)
+      .px(10)
+      .gap(8)
+      .items_center()
       .text_size(14)
-      .child(div().px(8).pt(4).pb(6).text_size(14).text_color(t.dim).child("Sort agents"))
-      .children(SORTS.map((s) => h_flex()
-        .id(`sort-${s.id}`)
-        .h(34)
-        .px(8)
-        .gap(9)
-        .rounded(0)
-        .items_center()
-        .text_color(t.foreground)
-        .hover((el) => el.bg(t.hover))
-        .on_click(() => {
-          setShared("agents.sort", s.id);
-          closeOverlay(props().overlay);
-        })
-        .child(svg(`mods/workspace-chrome/${s.icon}.svg`).size(14).flex_none().text_color(t.muted))
-        .child(div().flex_1().child(s.label))
-        .when(s.id === on, (el) => el.child(svg("mods/workspace-chrome/check.svg").size(14).flex_none().text_color(t.foreground)))));
+      .font_family("Lucida Grande")
+      .font_bold()
+      .text_color("#000000")
+      .hover((el) => el.bg("#3366aa").text_color("#ffffff"))
+      .on_click(() => {
+        setShared("agents.sort", s.id);
+        closeOverlay(props().overlay);
+      })
+      .child(div().w(12).flex_none().child(s.id === on ? "✓" : ""))
+      .child(div().flex_1().child(s.label)));
+    // The drop shadow is a dark block offset 2px down and right, behind.
+    return div().relative().w_full().child(div().absolute().top(2).left(2).right(0).bottom(0).bg("#00000066")).child(
+      div().relative().mr(2).mb(2).border(1).border_color("#000000").bg("#808080").pr(1).pb(1).child(
+      div().bg("#ffffff").pt(1).pl(1).child(
+        v_flex().w_full().py(2).bg("#dddddd")
+          .child(div().h(22).px(10).flex().items_center().text_size(14).font_family("Lucida Grande").font_bold().text_color("#808080").child("Sort agents"))
+          .child(v_flex().px(2).py(2).child(div().h(1).bg("#808080")).child(div().h(1).bg("#ffffff")))
+          .children(rows),
+      ),
+      ),
+    );
   }
 
   peek(addr) {
@@ -463,7 +471,7 @@ export default class Agents extends View {
               bevelBox(t, svg(`mods/workspace-chrome/${sort.icon}.svg`).size(12).text_color(t.foreground))
                 .id("ag-sort")
                 .mr(6)
-                .on_click(() => openOverlay({ mod: "platinum-agents", kind: "popup", width: 200, height: 140, props: { sortMenu: true } }))
+                .on_click(() => openOverlay({ mod: "platinum-agents", kind: "popup", width: 202, height: 102, frame: "none", props: { sortMenu: true } }))
                 .tooltip(`Sort agents: ${sort.label}`),
             ))),
         ),

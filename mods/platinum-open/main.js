@@ -8,6 +8,7 @@ import { run, props, closeOverlay, theme, settings, spaces, focused } from "herd
 const DARK = "#808080";
 const LIGHT = "#ffffff";
 const FONT = "Lucida Grande";
+const FOCUS = "#6a9fd0";
 
 // "/a/b\n/c.md" (a path wrapped across lines) -> "/a/b/c.md". Also drops
 // surrounding quotes and a file:// prefix, and expands a leading ~.
@@ -28,7 +29,8 @@ export default class PlatinumOpen extends View {
     this.text = "";
     this.input = InputState.new({ value: "" });
     this.input.on("change", (_e, cx) => { this.text = this.input.value(); cx.notify(); });
-    this.input.on("submit", () => this.submit());
+    // Return takes the default button: Open Split.
+    this.input.on("submit", () => this.submit(true));
     this.input.focus();
     cx.timer.after(600, () => this.input.focus());
     this.handle = cx.focus_handle();
@@ -62,17 +64,23 @@ export default class PlatinumOpen extends View {
 
   render() {
     const t = theme();
-    return v_flex().id("platinum-open").track_focus(this.handle).on_key_down((e, cx) => this.key(e, cx))
+    const dialog = v_flex().id("platinum-open").track_focus(this.handle).on_key_down((e, cx) => this.key(e, cx))
       .size_full().px(18).pt(16).pb(14).gap(10).bg(t.chrome).border_1().border_color("#000000").text_color(t.foreground)
       .font_family(FONT)
       .child(div().text_size(14).font_bold().child("Open a file by path"))
-      // Sunken text field: grey top and left, white bottom and right.
-      .child(div().pr(1).pb(1).bg(LIGHT).child(div().pt(1).pl(1).bg(DARK).child(
-        Input.new(this.input).h(24).px(6).bg("#ffffff").text_size(13).text_color(t.foreground))))
-      .child(div().text_size(12).text_color(t.dim).child("Paste a path to a Markdown or other file. Return opens it."))
+      // Mac OS 9 text box: a blue focus ring around a black outline, with a
+      // grey inner edge on the top and left, white face, bold text.
+      .child(div().p(2).rounded(3).bg(FOCUS).child(
+        div().border_1().border_color("#000000").pr(1).pb(1).bg(LIGHT).child(div().pt(1).pl(1).bg(DARK).child(
+          Input.new(this.input).h(22).px(5).bg("#ffffff").text_size(14).font_family(FONT).font_bold().text_color("#000000")))))
+      .child(div().text_size(12).text_color(t.dim).child("Paste a path to a Markdown or other file. Return opens it in a split."))
       .child(h_flex().justify_end().items_center().gap(4)
         .child(this.button(t, "po-cancel", "Cancel", () => closeOverlay(props()?.overlay), false))
-        .child(this.button(t, "po-split", "Open Split", () => this.submit(true), false))
-        .child(this.button(t, "po-open", "Open", () => this.submit(), true)));
+        .child(this.button(t, "po-open", "Open Tab", () => this.submit(false), false))
+        .child(this.button(t, "po-split", "Open Split", () => this.submit(true), true)));
+    // The drop shadow is a dark block offset 3px down and right, behind.
+    return div().relative().size_full()
+      .child(div().absolute().top(3).left(3).right(0).bottom(0).bg("#00000066"))
+      .child(div().absolute().top(0).left(0).right(3).bottom(3).child(dialog));
   }
 }

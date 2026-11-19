@@ -153,7 +153,7 @@ export default class PlatinumTabs extends View {
     // The + is a small inactive tab after the last one, as in Platinum.
     const plus = h_flex().id("tab-new").tooltip("New tab or terminal").h(32).items_center().flex_none()
       .on_mouse_down("left", stop)
-      .on_click(() => openOverlay({ mod: "new-menu", kind: "popup", width: 250, height: 512 }))
+      .on_click(() => openOverlay({ mod: "platinum-new-menu", kind: "popup", width: 250, height: 300, frame: "none" }))
       .child(cap("left", PRESSED))
       .child(h_flex().h_full().px(2).items_center().justify_center().border_t(1).border_color("#000000").bg(PRESSED)
         .text_size(16).font_family(FONT).font_bold().text_color(t.foreground).child("+"))
@@ -209,7 +209,7 @@ export default class PlatinumTabs extends View {
       .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_end().gap(0).overflow_x_scrollbar().track_scroll(this.scroll)
         .on_size_change((_size, cx) => { if (active >= 0) { this.scroll.scroll_to_item(active); cx.notify(); } })
         .children([...shown.map(item), plus]))
-      .when(this.preview, el => el.child(bevel(t, "tab-open", false, [">", "Preview"], () => openOverlay({ mod: "platinum-open", kind: "dialog", width: 460, height: 184, frame: "none" }), false, "Open a file by path")))
+      .when(this.preview, el => el.child(bevel(t, "tab-open", false, [">", "Preview"], () => openOverlay({ mod: "platinum-open", kind: "dialog", width: 463, height: 187, frame: "none" }), false, "Open a file by path")))
       .when(this.map, el => el.child(bevel(t, "tab-map", false, [svg("mods/platinum-tabs/compass.svg").size(16), "Map"], () => run("pane.split", { direction: "right", mod: "agenttrail" }), false, "Show the Agenttrail map")))
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg", "Browse files")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg", "Review git changes")))
