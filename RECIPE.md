@@ -192,6 +192,26 @@ Optional mods (gsydler/herdr-cria). Each is detected by a folder check in
 - `platinum-worktree`: modified copy of Herdr's `worktree` mod (New, Open and
   Remove worktree dialogs). Opened by `platinum-new-menu` and
   `platinum-menu`.
+- `platinum-context`: the right-click menu for rows in Files and Changes. A
+  popup can't call back into a panel, so the panel passes the whole menu as
+  props: `{items: [{label, icon?, enabled?, sep?, act}]}`. `act` is
+  `{run: [command, args]}`, `{exec: {cmd, args, cwd, on}}`, `{copy: text}`,
+  `{shared: [key, value]}` or `{dialog: {...}}`. Arrows move, Return runs.
+  `icon: "split-right"` uses `platinum-grip/split-right.svg`.
+- `platinum-dialog`: a Platinum alert or one-line prompt, opened by
+  `platinum-context` with `{kind: "confirm" | "prompt", title, message, ok,
+  danger, value, exec}`. OK runs `exec`; in a prompt, an arg that is exactly
+  `"{input}"` becomes the typed text. A failure shows the first line of its
+  stderr. `danger` makes Cancel the default button.
+- `platinum-diff`: one file's uncommitted diff in a pane or tab, props
+  `{path, root, on}`. Refreshes every 3 seconds. It repeats the diff code in
+  `platinum-changes`, as mods can't import from each other.
+- Files rows: Open in Split and Open in Tab (needs `cria-file-preview`),
+  Reveal in Finder, Copy Path, Copy Relative Path, Rename…, Move to Trash….
+  Changes rows: Open Diff in Split and Tab, Open File in Split and Tab, Stage,
+  Unstage, Discard Changes…, Reveal in Finder, Copy Path, Copy Relative Path.
+  Reveal, Rename and Trash are local only. Reads and writes go through `exec`
+  (`git`, `open -R`, `osascript` for the Trash, `pbcopy`).
 - `cria-files-extended`: a Files panel with a right-click menu and file icons.
   Add `{ "id": "files-extended", "type": "block", "content": { "mod":
   "cria-files-extended" } }` to the `panel-body` stack (see
@@ -223,7 +243,7 @@ before replacing a key they use.
 
 ## Done when
 
-- `herdr-app check mods/<name>` passes for all twelve mods.
+- `herdr-app check mods/<name>` passes for all fifteen mods.
 - After switching to a layout that hosts them, the window bar shows the
   space name between five stripes each side and the macOS buttons are clear
   of it.

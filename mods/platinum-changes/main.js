@@ -5,7 +5,7 @@
 // and commit behaviour is unchanged.
 import { View, div, image } from "gpui-kit";
 import { v_flex, h_flex, InputState, Input, Scrollbar, v_virtual_list } from "gpui-base";
-import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings } from "herdr";
+import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, openOverlay } from "herdr";
 
 function location() {
   const space = spaces().find((s) => s.active), f = focused();
@@ -54,6 +54,13 @@ export default class PlatinumChanges extends View {
     this.input.on("submit", (_e, cx) => this.commit(cx));
     this.input.on("focus", (_e, cx) => { this.typing = true; cx.notify(); });
     this.input.on("blur", (_e, cx) => { this.typing = false; cx.notify(); });
+    // Open in Split and Open in Tab need cria-file-preview.
+    this.preview = false;
+    cx.spawn(async (cx) => {
+      const r = await exec("sh", ["-c", 'test -d "${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/cria-file-preview"']).catch(() => null);
+      this.preview = r?.code === 0;
+      cx.notify();
+    });
     this.refresh(cx);
     cx.timer.every(10000, (cx) => this.refresh(cx));
   }
@@ -107,7 +114,8 @@ export default class PlatinumChanges extends View {
           const conflict = xy.includes("U") || xy === "AA" || xy === "DD";
           const s = conflict ? "U" : xy.includes("D") ? "D" : fresh || xy.includes("A") ? "A" : "M";
           const stat = stats[path] ?? { add: 0, del: 0 };
-          files.push({ path, status: s, fresh, ...stat });
+          // X is the index column, Y the work tree: what Stage and Unstage can act on.
+          files.push({ path, status: s, fresh, staged: xy[0] !== " " && xy[0] !== "?", unstaged: fresh || xy[1] !== " ", ...stat });
         }
         if (key() !== context) return;
         this.root = root; this.on = on; this.hasHead = head.code === 0; this.files = files; this.limited = entries.length > 1000; this.error = null;
@@ -160,6 +168,34 @@ export default class PlatinumChanges extends View {
       cx.notify();
     });
     cx.notify();
+  }
+
+  // The right-click menu: a popup mod gets the whole menu as props.
+  menu(f, cx) {
+    const abs = `${this.root}/${f.path}`, local = !this.on, name = f.path.split("/").pop();
+    const git = (args) => ({ cmd: "git", args, cwd: this.root, on: this.on });
+    const file = { file: abs, on: this.on }, diff = { path: f.path, root: this.root, on: this.on };
+    const gone = f.status === "D";
+    const discard = f.fresh ? ["clean", "-f", "--", f.path] : this.hasHead ? ["restore", "--source=HEAD", "--staged", "--worktree", "--", f.path] : ["rm", "-f", "--", f.path];
+    const unstage = this.hasHead ? ["restore", "--staged", "--", f.path] : ["rm", "--cached", "--", f.path];
+    const items = [
+      { label: "Open Diff in Split", icon: "split-right", act: { run: ["pane.split", { direction: "right", mod: "platinum-diff", props: diff }] } },
+      { label: "Open Diff in Tab", act: { run: ["tab.new", { name: `${name} diff`, mod: "platinum-diff", props: diff }] } },
+      ...(!gone && this.preview ? [
+        { label: "Open File in Split", icon: "split-right", sep: true, act: { run: ["pane.split", { direction: "right", mod: "cria-file-preview", props: file }] } },
+        { label: "Open File in Tab", act: { run: ["tab.new", { name, mod: "cria-file-preview", props: file }] } },
+      ] : []),
+      ...(f.unstaged ? [{ label: "Stage", sep: true, act: { exec: git(["add", "--", f.path]) } }] : []),
+      ...(f.staged ? [{ label: "Unstage", sep: !f.unstaged, act: { exec: git(unstage) } }] : []),
+      { label: "Discard Changes…", act: { dialog: { kind: "confirm", danger: true, title: `Discard changes to “${name}”?`,
+        message: f.fresh ? "The new file is deleted. This cannot be undone." : "Your edits to this file are lost. This cannot be undone.", ok: "Discard", exec: git(discard) } } },
+      ...(local && !gone ? [{ label: "Reveal in Finder", sep: true, act: { exec: { cmd: "open", args: ["-R", abs] } } }] : []),
+      { label: "Copy Path", sep: !(local && !gone), act: { copy: abs } },
+      { label: "Copy Relative Path", act: { copy: f.path } },
+    ];
+    openOverlay({ mod: "platinum-context", kind: "popup", width: 240, height: items.length * 22 + items.filter((i) => i.sep).length * 6 + 14, frame: "none", props: { items } });
+    // Look again after the command runs.
+    for (const ms of [1500, 4000]) cx.timer?.after?.(ms, (cx) => this.refresh(cx));
   }
 
   commit(cx) {
@@ -228,7 +264,7 @@ export default class PlatinumChanges extends View {
       .child(div().flex_1().min_h(44).max_h(this.files.length * 32 + 12).relative().border_b(1).border_color(t.border)
         .child(v_flex().id("changes-list").absolute().inset_0().overflow_y_scroll().p(0).children(this.files.map((f) => {
         const parts = f.path.split("/"), name = parts.pop();
-        return h_flex().id(`change-${f.path}`).h(32).flex_none().px(8).gap(8).items_center().rounded(0).cursor_pointer().when(this.open === f.path, (e) => e.bg(t.selected)).hover((s) => s.bg(t.hover)).on_click((_e, cx) => this.pick(f.path, cx))
+        return h_flex().id(`change-${f.path}`).h(32).flex_none().px(8).gap(8).items_center().rounded(0).cursor_pointer().when(this.open === f.path, (e) => e.bg(t.selected)).hover((s) => s.bg(t.hover)).on_click((_e, cx) => this.pick(f.path, cx)).on_mouse_down("right", (_e, cx) => { cx.stop_propagation(); this.menu(f, cx); })
           .child(div().w(20).text_size(14).text_color(f.status === "A" ? t.ansi2 : f.status === "D" ? t.ansi1 : f.status === "U" ? t.ansi1 : t.blocked).child(f.status))
           .child(h_flex().flex_1().min_w(0).child(div().text_color(t.dim).truncate().child(parts.length ? parts.join("/") + "/" : "")).child(div().max_w(260).min_w(0).truncate().child(name)))
           .when(f.add > 0, (e) => e.child(div().text_size(14).text_color(t.ansi2).child(`+${f.add}`))).when(f.del > 0, (e) => e.child(div().text_size(14).text_color(t.ansi1).child(`−${f.del}`)));

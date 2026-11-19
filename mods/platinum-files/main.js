@@ -5,7 +5,7 @@
 // their colors), square corners, a gray header, lilac row hover.
 import { View, div, svg, image } from "gpui-kit";
 import { v_flex, h_flex, Editor, EditorState } from "gpui-base";
-import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, window, run } from "herdr";
+import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, window, run, openOverlay } from "herdr";
 
 function location() {
   const space = spaces().find(s => s.active), f = focused();
@@ -165,6 +165,32 @@ export default class PlatinumFiles extends View {
     });
   }
 
+  // The right-click menu: a popup mod gets the whole menu as props. Reveal,
+  // Rename and Delete use the local Finder, so they are left out on a remote
+  // machine.
+  menu(entry, path, cx) {
+    const abs = `${this.root}/${path}`, local = !this.on, dir = abs.slice(0, abs.lastIndexOf("/"));
+    const file = { file: abs, on: this.on };
+    const items = [
+      ...(!entry.dir && this.preview ? [
+        { label: "Open in Split", icon: "split-right", act: { run: ["pane.split", { direction: "right", mod: "cria-file-preview", props: file }] } },
+        { label: "Open in Tab", act: { run: ["tab.new", { name: entry.name, mod: "cria-file-preview", props: file }] } },
+      ] : []),
+      ...(local ? [{ label: "Reveal in Finder", sep: !entry.dir && this.preview, act: { exec: { cmd: "open", args: ["-R", abs] } } }] : []),
+      { label: "Copy Path", sep: !local && !entry.dir && this.preview, act: { copy: abs } },
+      { label: "Copy Relative Path", act: { copy: path } },
+      ...(local ? [
+        { label: "Rename…", sep: true, act: { dialog: { kind: "prompt", title: `Rename “${entry.name}”`, message: "Type a new name.", value: entry.name, ok: "Rename", height: 213,
+          exec: { cmd: "sh", args: ["-c", 'n="$2"; case "$n" in ""|*/*) echo "Enter a name without slashes." >&2; exit 1;; esac; d=$(dirname "$1"); [ -e "$d/$n" ] && { echo "That name is already taken." >&2; exit 1; }; mv -- "$1" "$d/$n"', "rename", abs, "{input}"] } } } },
+        { label: "Move to Trash…", act: { dialog: { kind: "confirm", danger: true, title: `Move “${entry.name}” to the Trash?`, message: entry.dir ? "The folder and everything in it go to the Trash." : "The file goes to the Trash.", ok: "Move to Trash",
+          exec: { cmd: "osascript", args: ["-e", "on run argv\ntell application \"Finder\" to delete POSIX file (item 1 of argv)\nend run", abs] } } } },
+      ] : []),
+    ];
+    openOverlay({ mod: "platinum-context", kind: "popup", width: 240, height: items.length * 22 + items.filter((i) => i.sep).length * 6 + 14, frame: "none", props: { items } });
+    // The folder watch only sees local changes; look again after the command.
+    for (const ms of [1500, 4000]) cx.timer?.after?.(ms, (cx) => this.refresh(cx));
+  }
+
   icon(entry, open) {
     const name = entry.dir ? (open ? "folder-open" : "folder-closed") : "file";
     return image(`mods/platinum-files/${name}.svg`).w(20).h(20).flex_none();
@@ -178,6 +204,7 @@ export default class PlatinumFiles extends View {
       out.push(h_flex().id(`file-${path}`).h(30).flex_none().pl(8 + depth * 22).pr(8).gap(7).items_center().rounded(0).cursor_pointer()
         // Zebra stripes, as in the Finder's list view.
         .bg(out.length % 2 ? "#eeeef6" : t.background).hover(s => s.bg(t.selected))
+        .on_mouse_down("right", (_e, cx) => { cx.stop_propagation(); this.menu(entry, path, cx); })
         .on_click((_e, cx) => {
           if (entry.dir) return this.toggle(path, cx);
           if (this.preview) {
