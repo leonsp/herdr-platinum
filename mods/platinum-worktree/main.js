@@ -1,3 +1,9 @@
+// Modified copy of Herdr's shipped `worktree` mod, from the Herdr project
+// (https://github.com/herdrdev/herdr), licensed under the Apache License 2.0.
+// See NOTICE. Changes: Mac OS 9 Platinum look (grey dialog, drop shadow,
+// bevelled buttons, sunken text box and list, blue selection). Behaviour is
+// unchanged.
+//
 // Worktree dialog: { space, action: "new" | "open" | "remove" } or
 // { folder, machine } for a repo without a space; optional { branch, tab, argv }.
 

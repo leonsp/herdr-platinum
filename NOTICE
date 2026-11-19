@@ -13,6 +13,8 @@ Apache License, Version 2.0:
   mods/platinum-tabs/main.js      from Herdr's `tabs` mod
   mods/platinum-spaces/main.js    from Herdr's `spaces` mod
   mods/platinum-agents/main.js    from Herdr's `agents` mod
+  mods/platinum-menu/main.js      from Herdr's `menu` mod
+  mods/platinum-worktree/main.js  from Herdr's `worktree` mod
 
 Each file carries a notice at the top that it was changed, and describes
 the changes. Copyright in the original code remains with the Herdr authors.

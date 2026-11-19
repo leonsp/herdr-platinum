@@ -45,9 +45,9 @@ Top to bottom:
   (same bevel as the status bar buttons). The open panel's button is
   depressed: the bevel is swapped and the face is darker grey `#bbbbbb`.
   With `cria-file-preview` installed, a `> Preview` button sits between `+`
-  and Files. It opens the `platinum-open` dialog (a text field, Cancel, Open
-  Split, Open): paste a path, newlines removed, and the file opens in a
-  preview tab, or a split pane to the right. With the `agenttrail` mod
+  and Files. It opens the `platinum-open` dialog (a text box, Cancel, Open
+  Tab, Open Split): paste a path, newlines removed, and the file opens in a
+  split pane to the right (the default button, and Return), or a preview tab. With the `agenttrail` mod
   installed (sodiumsun/agenttrail, set its `mod.json` `place` to `none` or it
   docks itself into the layout), a compass `Map` button follows Preview and
   runs `pane.split` `{direction:"right", mod:"agenttrail"}`. An optional panel
@@ -85,13 +85,26 @@ Top to bottom:
   (tab) in `working`, blocked and done are an 8px dot in `blocked` or
   `done`, idle is a plain hollow marker. This is Herdr's own behaviour,
   kept unchanged in the copies.
-- Click a pane header to focus it. The close box closes the pane. The zoom
-  box zooms the pane.
+- Click a pane header to focus it, or move the pointer onto it: the header
+  is the only part of a pane a mod can hook, so focus follows hover there
+  only. The close box closes the pane. The zoom box zooms the pane.
 - Tabs: click selects, double click renames, right click opens the tab
   menu, drag onto another tab moves it, the wheel or a touchpad swipe
   switches tabs. `+` opens the new-tab menu. The panel button toggles that
   panel. The open panel is remembered per space.
 - Hover: buttons go to `hover` grey, pane boxes to `accent`.
+- Menus and dialogs follow Mac OS 9. A menu is a `#dddddd` face with a black
+  1px outline, a white 1px highlight inside on the top and left, `#808080`
+  on the bottom and right, and a 2px drop shadow (`#00000066`, offset down
+  and right). Rows are 22px, bold 14px Lucida Grande, with a solid `#3366aa`
+  highlight and white text under the pointer. A separator is a grey line
+  over a white line. Disabled rows are `#808080`. Shortcuts sit on the right
+  as glyphs (`⇧⌘D`), each modifier in a 14px cell so they line up. A dialog
+  is the same grey with a 3px shadow, bevelled push buttons (the default one
+  double outlined), and a text box with a black outline, a grey inner edge
+  on the top and left, and a `#6a9fd0` ring while focused. Menus and dialogs
+  open with `frame: "none"` so Herdr draws no border or corners of its own,
+  and the popup is a few px larger than the menu to hold the shadow.
 - Status bar breadcrumbs: `~` for the home folder, then at most the last four
   folders joined with ` › `, prefixed with `… › ` when longer. Updates with
   focus.
@@ -169,6 +182,16 @@ Optional mods (gsydler/herdr-cria). Each is detected by a folder check in
   preview tab (`tab.new` with `mod` and `props` `{file, on}`).
 - `platinum-open` (in this repo, needs `cria-file-preview`): the open-by-path
   dialog. Same folder layout as the other mods; no layout block needed.
+- `platinum-menu`: modified copy of Herdr's `menu` mod, the right-click menu
+  for spaces, tabs and terminals. Opened by `platinum-spaces` and
+  `platinum-tabs`, and by the layout root's `"terminal_menu":
+  "platinum-menu"`; its `mod.json` sets the popup size and `frame: "none"`.
+- `platinum-new-menu`: the `+` menu, written to replace Herdr's `new-menu`,
+  which a layout can't swap. Uses `knownAgents()` (installed ones only),
+  `tab.new`, `space.new`. Opened by `platinum-tabs`.
+- `platinum-worktree`: modified copy of Herdr's `worktree` mod (New, Open and
+  Remove worktree dialogs). Opened by `platinum-new-menu` and
+  `platinum-menu`.
 - `cria-files-extended`: a Files panel with a right-click menu and file icons.
   Add `{ "id": "files-extended", "type": "block", "content": { "mod":
   "cria-files-extended" } }` to the `panel-body` stack (see
@@ -200,7 +223,7 @@ before replacing a key they use.
 
 ## Done when
 
-- `herdr-app check mods/<name>` passes for all nine mods.
+- `herdr-app check mods/<name>` passes for all twelve mods.
 - After switching to a layout that hosts them, the window bar shows the
   space name between five stripes each side and the macOS buttons are clear
   of it.

@@ -1,5 +1,9 @@
-// Mac OS 9 Platinum context menus, cloned from Herdr's shipped `menu` mod:
-// same items, Platinum look. Opened as a popup with
+// Modified copy of Herdr's shipped `menu` mod, from the Herdr project
+// (https://github.com/herdrdev/herdr), licensed under the Apache License 2.0.
+// See NOTICE. Changes: Mac OS 9 Platinum look (grey face, black outline,
+// drop shadow, bold Lucida Grande, blue highlight, shortcut glyphs), no icons,
+// and worktree items open the Platinum worktree dialog. Items and behaviour
+// are unchanged. Opened as a popup with
 // props { tab: "pane" | "tab" | "space" | "global", target }.
 // ↑/↓ move, Enter runs, Esc closes. An item is [label, command, args];
 // a command "worktree" opens the worktree dialog instead.

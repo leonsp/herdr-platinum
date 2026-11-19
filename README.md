@@ -16,6 +16,10 @@ mods/platinum-changes/   Changes panel with square corners and buttons
 mods/platinum-tabs/      tab bar in Platinum grays, 14px text
 mods/platinum-spaces/    Spaces sidebar, 14px text, square selection
 mods/platinum-agents/    Agents list, 14px text, square rows
+mods/platinum-menu/      right-click menus (space, tab, terminal)
+mods/platinum-new-menu/  the + menu: terminal, agents, spaces, worktrees
+mods/platinum-worktree/  New, Open and Remove worktree dialogs
+mods/platinum-open/      open a file by path (needs cria-file-preview)
 mods/platinum-grip/      status bar: breadcrumbs, git branch, split, zoom,
                          palette, clock, resize grip
 keys.json                cmd-k opens the command palette
@@ -30,7 +34,7 @@ From a clone, link each mod into Herdr's home and check it:
 
 ```sh
 H=~/.config/herdr-app
-for m in bar pane files changes tabs spaces agents grip; do
+for m in bar pane files changes tabs spaces agents grip menu new-menu worktree open; do
   ln -s "$(pwd)/mods/platinum-$m" "$H/mods/platinum-$m"
   herdr-app check "$H/mods/platinum-$m"
 done
@@ -42,5 +46,5 @@ another layout and back.
 ## Licence
 
 Apache License 2.0, see `LICENSE`. The `platinum-files`, `platinum-changes`,
-`platinum-tabs`, `platinum-spaces` and `platinum-agents` mods are modified
-copies of Herdr's own mods, also Apache 2.0. See `NOTICE`.
+`platinum-tabs`, `platinum-spaces`, `platinum-agents`, `platinum-menu` and
+`platinum-worktree` mods are modified copies of Herdr's own mods, also Apache 2.0. See `NOTICE`.
