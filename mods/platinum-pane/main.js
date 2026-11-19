@@ -135,6 +135,10 @@ export default class PlatinumPane extends View {
               .gap(2)
               .bg(t.surface)
               .text_size(14)
+              .on_hover((hovered) => {
+                // Focus follows the pointer onto the header.
+                if (hovered && !this.me()?.focused) run("pane.focus", { pane });
+              })
               .on_click(() => run("pane.focus", { pane }))
               .children(kids),
           ),
