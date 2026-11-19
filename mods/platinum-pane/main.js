@@ -46,6 +46,21 @@ export default class PlatinumPane extends View {
         el.child(div().w(6).h(6).border(1).border_color(t.foreground)));
   }
 
+  // The tooltip shows the whole title when the header cuts it short.
+  title(pane, name, color) {
+    return div()
+      .id(`title-${pane}`)
+      .tooltip(name)
+      .flex_none()
+      .truncate()
+      .max_w(320)
+      .px(8)
+      .font_family("Lucida Grande")
+      .font_bold()
+      .text_color(color)
+      .child(name);
+  }
+
   render(_cx) {
     const t = theme();
     const p = this.me();
@@ -59,14 +74,14 @@ export default class PlatinumPane extends View {
       ? [
           this.box(t, `close-${pane}`, "Close pane", "pane.close", { pane }),
           this.stripes(t),
-          div().flex_none().truncate().max_w(320).px(8).font_family("Lucida Grande").font_bold().text_color(t.foreground).child(name),
+          this.title(pane, name, t.foreground),
           this.stripes(t),
           this.box(t, `zoom-${pane}`, "Zoom pane", "pane.zoom", { pane }, true),
         ]
       : [
           div().w(BOX).h(BOX).flex_none(),
           div().flex_1(),
-          div().flex_none().truncate().max_w(320).px(8).font_family("Lucida Grande").font_bold().text_color(t.muted).child(name),
+          this.title(pane, name, t.muted),
           div().flex_1(),
           div().w(BOX).h(BOX).flex_none(),
         ];

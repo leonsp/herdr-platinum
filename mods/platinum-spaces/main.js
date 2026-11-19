@@ -569,6 +569,7 @@ export default class Spaces extends View {
         // The left spacer matches the + box, so the title sits in the centre.
         .when(!collapsed, el => el.child(div().w(26).flex_none()).child(div().flex_1()).child(div().px(10).h(20).flex().items_center().bg(t.chrome).font_family("Lucida Grande").font_bold().child("Spaces")).child(div().flex_1()))
         .child(bevelBox(t, svg("mods/workspace-chrome/plus.svg").size(12)).id("space-new")
+          .tooltip("New space")
           .when(!collapsed, el => el.mr(6))
           .on_click(() => run("space.new"))))
       .child(v_flex().flex_1().min_h(0).px(0).pb(14).overflow_y_scrollbar().mode("always").track_scroll(this.scroll)
