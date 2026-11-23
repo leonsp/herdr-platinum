@@ -5,13 +5,29 @@
 // and commit behaviour is unchanged.
 import { View, div, image } from "gpui-kit";
 import { v_flex, h_flex, InputState, Input, Scrollbar, v_virtual_list } from "gpui-base";
-import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, openOverlay } from "herdr";
+import { spaces, panes, focused, exec, hc, readTextFile, watchFolder, theme, settings, openOverlay } from "herdr";
+
+// A pane's cwd is its shell's folder. A program started elsewhere (claude in
+// another worktree, say) runs in a different one, and that is the repo the
+// pane is about. hc knows it, so ask and remember the answer per terminal.
+const foreground = new Map(), probed = new Map();
+async function probe(terminal) {
+  if (!terminal || Date.now() - (probed.get(terminal) ?? 0) < 2000) return false;
+  probed.set(terminal, Date.now());
+  const before = foreground.get(terminal);
+  try {
+    const r = await hc(["get", terminal]);
+    const cwd = r.code === 0 ? JSON.parse(r.stdout).foreground?.cwd : null;
+    if (cwd) foreground.set(terminal, cwd); else foreground.delete(terminal);
+  } catch { foreground.delete(terminal); }
+  return foreground.get(terminal) !== before;
+}
 
 function location() {
   const space = spaces().find((s) => s.active), f = focused();
   const pane = f?.pane ? panes().find(p => p.pane === f.pane) : null;
   const on = f?.pane === null ? (f.terminal?.includes("/") ? f.terminal.split("/")[0] : null) : space?.machine ?? null;
-  return { cwd: pane?.cwd || f?.cwd || space?.folder, on };
+  return { cwd: foreground.get(f?.terminal) || pane?.cwd || f?.cwd || space?.folder, on };
 }
 const key = () => JSON.stringify(location());
 // Reads write nothing under .git (no index refresh or lock, no fsmonitor cookie):
@@ -80,6 +96,7 @@ export default class PlatinumChanges extends View {
 
   refresh(cx) {
     if (this.loading || this.busy) return;
+    probe(focused()?.terminal).then((changed) => { if (changed) cx.notify(); });
     const { cwd, on } = location(), context = key();
     if (context !== this.context) {
       this.context = context; this.root = null; this.files = []; this.open = null;
