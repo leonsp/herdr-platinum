@@ -137,6 +137,16 @@ export default class Menu extends View {
     closeOverlay(props()?.overlay);
     // Platinum worktree dialog: 3px of drop shadow on top of the dialog's size.
     if (it[1] === "worktree") openOverlay({ mod: "platinum-worktree", kind: "dialog", frame: "none", ...(it[2].action === "open" ? { width: 483, height: 403 } : { width: 483, height: it[2].action === "remove" ? 243 : 223 }), props: it[2] });
+    // Platinum alert in place of Herdr's own confirm. Cancel is the default.
+    else if (it[1] === "space.close") {
+      const s = spaces().find((x) => x.id === it[2].id);
+      openOverlay({ mod: "platinum-dialog", kind: "dialog", frame: "none", width: 443, height: 193, props: {
+        title: `Close the space "${s?.name ?? ""}"?`,
+        message: "Its tabs and terminals will be closed. Programs running in them will stop.",
+        ok: "Close", kind: "confirm", danger: true,
+        run: { name: "space.close", args: { id: it[2].id, confirmed: true } },
+      } });
+    }
     else run(it[1], it[2]);
   }
 

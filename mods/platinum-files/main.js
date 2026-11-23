@@ -5,13 +5,29 @@
 // their colors), square corners, a gray header, lilac row hover.
 import { View, div, svg, image } from "gpui-kit";
 import { v_flex, h_flex, Editor, EditorState } from "gpui-base";
-import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, window, run, openOverlay } from "herdr";
+import { spaces, panes, focused, exec, hc, readTextFile, watchFolder, theme, settings, window, run, openOverlay } from "herdr";
+
+// A pane's cwd is its shell's folder. A program started elsewhere (claude in
+// another worktree, say) runs in a different one, and that is the folder the
+// pane is about. hc knows it, so ask and remember the answer per terminal.
+const foreground = new Map(), probed = new Map();
+async function probe(terminal) {
+  if (!terminal || Date.now() - (probed.get(terminal) ?? 0) < 2000) return false;
+  probed.set(terminal, Date.now());
+  const before = foreground.get(terminal);
+  try {
+    const r = await hc(["get", terminal]);
+    const cwd = r.code === 0 ? JSON.parse(r.stdout).foreground?.cwd : null;
+    if (cwd) foreground.set(terminal, cwd); else foreground.delete(terminal);
+  } catch { foreground.delete(terminal); }
+  return foreground.get(terminal) !== before;
+}
 
 function location() {
   const space = spaces().find(s => s.active), f = focused();
   const pane = f?.pane ? panes().find(p => p.pane === f.pane) : null;
   const on = f?.pane === null ? (f.terminal?.includes("/") ? f.terminal.split("/")[0] : null) : space?.machine ?? null;
-  return { cwd: pane?.cwd || f?.cwd || space?.folder, on, space: space?.id };
+  return { cwd: foreground.get(f?.terminal) || pane?.cwd || f?.cwd || space?.folder, on, space: space?.id };
 }
 const key = () => JSON.stringify(location());
 const LANG = { ts: "js", tsx: "js", mts: "js", cts: "js", jsx: "js", mjs: "js", toml: "yaml", jsonc: "json", svelte: "html", vue: "html" };
@@ -88,6 +104,7 @@ export default class PlatinumFiles extends View {
   }
 
   refresh(cx) {
+    probe(focused()?.terminal).then((changed) => { if (changed) cx.notify(); });
     const { cwd, on } = location(), next = key();
     if (next !== this.context?.key) {
       if (this.context) this.saved.set(this.context.key, { folders: this.folders, file: this.file });

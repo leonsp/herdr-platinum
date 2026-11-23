@@ -1,12 +1,12 @@
 // Mac OS 9 Platinum alert, or a one-line prompt. Props:
 //   { title, message?, ok, kind: "confirm" | "prompt", value?, danger?,
-//     exec: { cmd, args, cwd, on }, overlay }
-// OK runs `exec`; in a prompt, an arg that is exactly "{input}" becomes the
+//     exec: { cmd, args, cwd, on }, run?: { name, args }, overlay }
+// OK runs `exec`, or the app command `run` when given; in a prompt, an arg that is exactly "{input}" becomes the
 // typed text. A failure shows the program's message in the dialog. A danger
 // dialog makes Cancel the default button, so Return is safe.
 import { View, div } from "gpui-kit";
 import { v_flex, h_flex, InputState, Input } from "gpui-base";
-import { props, closeOverlay, exec, theme } from "herdr";
+import { props, closeOverlay, exec, run, theme } from "herdr";
 
 const DARK = "#808080";
 const LIGHT = "#ffffff";
@@ -42,6 +42,7 @@ export default class PlatinumDialog extends View {
 
   ok(cx) {
     const p = props() ?? {};
+    if (p.run) { run(p.run.name, p.run.args ?? {}); this.close(); return; }
     if (this.busy || !p.exec) return;
     if (this.prompt && !this.text.trim()) { this.error = "Enter a name."; cx.notify(); return; }
     this.busy = true;
