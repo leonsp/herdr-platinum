@@ -195,7 +195,7 @@ export default class Agents extends View {
   // Clarus the Dogcow: a click shows "Moof!" for a moment.
   clarus(t) {
     return div().flex_none().h(110).relative().bg(t.chrome)
-      .child(div().id("clarus").absolute().bottom(4).left(10).cursor_pointer()
+      .child(div().id("clarus").absolute().bottom(4).right(10).cursor_pointer()
         // The top row of the picture is transparent; clip it, as its edge draws a faint line.
         .child(div().w(128).h(104).overflow_hidden().child(image("mods/platinum-agents/clarus.png").w(128).h(106).flex_none().mt(-2)))
         .on_click((_e, cx) => {
@@ -208,7 +208,7 @@ export default class Agents extends View {
           });
         }))
       .when(this.moof, (el) => el.child(
-        div().absolute().top(0).left(96).px(10).h(22).flex().items_center().rounded(11)
+        div().absolute().top(0).right(120).px(10).h(22).flex().items_center().rounded(11)
           .bg("#ffffff").border_1().border_color("#000000")
           .font_family("Lucida Grande").font_bold().text_size(14).text_color("#dd2211")
           .child("Moof!")));
