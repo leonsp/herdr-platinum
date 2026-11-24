@@ -194,7 +194,7 @@ export default class Agents extends View {
 
   // Clarus the Dogcow: a click shows "Moof!" for a moment.
   clarus(t) {
-    return div().flex_none().h(110).relative().bg(t.chrome).border_t(1).border_color(t.border)
+    return div().flex_none().h(110).relative().bg(t.chrome)
       .child(div().id("clarus").absolute().bottom(4).left(10).cursor_pointer()
         .child(image("mods/platinum-agents/clarus.png").w(128).h(106).flex_none())
         .on_click((_e, cx) => {
@@ -501,8 +501,9 @@ export default class Agents extends View {
       .when(list.length === 0 && !collapsed, (el) =>
         el.child(div().px(12).text_size(14).text_color(t.dim).child("No agent status yet. Agents show up here when they report their status. Older versions and agents inside tmux may not.")),
       )
-      .child(div().flex_1().min_h(0).child(sunken(v_flex().id("ag-list").size_full().min_h(0).bg(t.chrome).px(0).overflow_y_scrollbar().mode("always").children(rows))))
-      .when(!collapsed, (el) => el.child(this.clarus(t)))
+      .child(div().flex_1().min_h(0).child(sunken(v_flex().size_full().min_h(0).bg(t.chrome)
+        .child(div().flex_1().min_h(0).child(v_flex().id("ag-list").size_full().min_h(0).bg(t.chrome).px(0).overflow_y_scrollbar().mode("always").children(rows)))
+        .when(!collapsed, (el) => el.child(this.clarus(t))))))
       .when(collapsed, (el) =>
         el.child(
           h_flex()
