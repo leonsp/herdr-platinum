@@ -102,6 +102,7 @@ export default class Agents extends View {
   init(_props, cx) {
     if (props()?.sortMenu) return;
     this.folded = new Set();
+    this.moof = false;
     // Each agent's last state and when it changed (ms), kept across restarts.
     try { this.changed = JSON.parse(localStorage.getItem("changed") ?? "{}"); } catch { this.changed = {}; }
     if (!this.changed || typeof this.changed !== "object" || Array.isArray(this.changed)) this.changed = {};
@@ -189,6 +190,27 @@ export default class Agents extends View {
       ),
       ),
     );
+  }
+
+  // Clarus the Dogcow: a click shows "Moof!" for a moment.
+  clarus(t) {
+    return div().flex_none().h(64).relative().bg(t.chrome).border_t(1).border_color(t.border)
+      .child(div().id("clarus").absolute().bottom(4).left(10).cursor_pointer()
+        .child(image("mods/platinum-agents/clarus.svg").w(66).h(42).flex_none())
+        .on_click((_e, cx) => {
+          this.moof = true;
+          cx.notify();
+          this.moofTimer?.cancel?.();
+          this.moofTimer = cx.timer.after(1500, (cx) => {
+            this.moof = false;
+            cx.notify();
+          });
+        }))
+      .when(this.moof, (el) => el.child(
+        div().absolute().top(6).left(60).px(10).h(22).flex().items_center().rounded(11)
+          .bg("#ffffff").border_1().border_color("#000000")
+          .font_family("Lucida Grande").font_bold().text_size(14).text_color("#dd2211")
+          .child("Moof!")));
   }
 
   peek(addr) {
@@ -480,6 +502,7 @@ export default class Agents extends View {
         el.child(div().px(12).text_size(14).text_color(t.dim).child("No agent status yet. Agents show up here when they report their status. Older versions and agents inside tmux may not.")),
       )
       .child(div().flex_1().min_h(0).child(sunken(v_flex().id("ag-list").size_full().min_h(0).bg(t.chrome).px(0).overflow_y_scrollbar().mode("always").children(rows))))
+      .when(!collapsed, (el) => el.child(this.clarus(t)))
       .when(collapsed, (el) =>
         el.child(
           h_flex()
