@@ -196,7 +196,8 @@ export default class Agents extends View {
   clarus(t) {
     return div().flex_none().h(110).relative().bg(t.chrome)
       .child(div().id("clarus").absolute().bottom(4).left(10).cursor_pointer()
-        .child(image("mods/platinum-agents/clarus.png").w(128).h(106).flex_none())
+        // The top row of the picture is transparent; clip it, as its edge draws a faint line.
+        .child(div().w(128).h(104).overflow_hidden().child(image("mods/platinum-agents/clarus.png").w(128).h(106).flex_none().mt(-2)))
         .on_click((_e, cx) => {
           this.moof = true;
           cx.notify();
