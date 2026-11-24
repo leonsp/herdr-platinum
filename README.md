@@ -23,6 +23,7 @@ mods/platinum-open/      open a file by path (needs cria-file-preview)
 mods/platinum-context/   right-click menu for Files and Changes rows
 mods/platinum-dialog/    Platinum alert and rename prompt
 mods/platinum-diff/      one file's diff in a split or tab
+mods/platinum-toast/     notifications ("Claude Code needs you")
 mods/platinum-grip/      status bar: breadcrumbs, git branch, split, zoom,
                          palette, clock, resize grip
 keys.json                cmd-k opens the command palette
@@ -37,7 +38,7 @@ From a clone, link each mod into Herdr's home and check it:
 
 ```sh
 H=~/.config/herdr-app
-for m in bar pane files changes tabs spaces agents grip menu new-menu worktree open context dialog diff; do
+for m in bar pane files changes tabs spaces agents grip menu new-menu worktree open context dialog diff toast; do
   ln -s "$(pwd)/mods/platinum-$m" "$H/mods/platinum-$m"
   herdr-app check "$H/mods/platinum-$m"
 done
@@ -50,4 +51,4 @@ another layout and back.
 
 Apache License 2.0, see `LICENSE`. The `platinum-files`, `platinum-changes`,
 `platinum-tabs`, `platinum-spaces`, `platinum-agents`, `platinum-menu` and
-`platinum-worktree` mods are modified copies of Herdr's own mods, also Apache 2.0. See `NOTICE`.
+`platinum-worktree` and `platinum-toast` mods are modified copies of Herdr's own mods, also Apache 2.0. See `NOTICE`.
