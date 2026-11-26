@@ -27,6 +27,12 @@ export function sizeFor(level) {
 }
 
 const raised = (child) => div().flex_none().bg(DARK).pr(1).pb(1).child(div().bg(LIGHT).pt(1).pl(1).child(child));
+// Platinum push button: black outline, then a white top-left and grey
+// bottom-right bevel (swapped when pressed), as in the status bar.
+const push = (child, pressed = false) => div().flex_none().rounded(3).border_1().border_color("#000000").bg(DARK).child(
+  pressed
+    ? div().pr(1).pb(1).rounded(2).bg(LIGHT).child(div().pt(1).pl(1).rounded(2).bg(DARK).child(child))
+    : div().pr(1).pb(1).rounded(2).bg(DARK).child(div().pt(1).pl(1).rounded(2).bg(LIGHT).child(child)));
 const sunken = (child) => div().flex_none().bg(LIGHT).pr(1).pb(1).child(div().bg(DARK).pt(1).pl(1).child(child));
 
 function art(name, size) {
@@ -154,9 +160,8 @@ export default class Minesweeper extends View {
 
   button(id, label, active, onClick) {
     const text = div().h(22).px(10).flex().items_center().justify_center().font_family(FONT).text_size(12)
-      .text_color("#000000").bg(active ? "#c4c4c4" : FACE).when(active, (el) => el.font_bold()).child(label);
-    const face = active ? sunken(text) : raised(text);
-    return div().id(id).flex_1().child(face).on_click((_e, cx) => { cx.stop_propagation(); onClick(cx); });
+      .text_color("#000000").rounded(2).bg(active ? "#c4c4c4" : FACE).when(active, (el) => el.font_bold()).child(label);
+    return div().id(id).flex_1().child(push(text, active).w_full()).on_click((_e, cx) => { cx.stop_propagation(); onClick(cx); });
   }
 
   cell(i) {
@@ -198,7 +203,7 @@ export default class Minesweeper extends View {
       })));
 
     const smiley = div().id("mines-face").tooltip("New game").flex_none()
-      .child(raised(div().w(26).h(26).bg(FACE).flex().items_center().justify_center().child(art(faceName, 18))))
+      .child(push(div().w(28).h(28).rounded(2).bg(FACE).flex().items_center().justify_center().child(art(faceName, 18))))
       .on_click((_e, cx) => { cx.stop_propagation(); this.newGame(cx); });
     const panel = sunken(h_flex().h(40).items_center().justify_between().px(6).bg(FACE)
       .child(counter(b.total - b.flags())).child(smiley).child(counter(this.seconds)));
@@ -212,7 +217,7 @@ export default class Minesweeper extends View {
     const footer = h_flex().h(24).items_center().justify_between().font_family(FONT).text_size(12).text_color("#000000")
       .child(div().child(`Best ${NAMES[this.options.level]}: ${best === undefined ? "none" : `${best} s`}`))
       .child(div().id("mines-sound").flex_none().child(
-        raised(div().h(20).px(8).flex().items_center().bg(FACE).child(`Sound ${this.options.sound ? "on" : "off"}`)))
+        push(div().h(22).px(10).rounded(2).flex().items_center().bg(FACE).child(`Sound ${this.options.sound ? "on" : "off"}`)))
         .on_click((_e, cx) => { cx.stop_propagation(); this.options.sound = !this.options.sound; this.save(); cx.notify(); }));
 
     const win = v_flex().id("mines").track_focus(this.handle)
