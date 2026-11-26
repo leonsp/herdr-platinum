@@ -80,8 +80,7 @@
               "active": "files",
               "children": [
                 { "id": "files", "type": "block", "content": { "mod": "platinum-files" } },
-                { "id": "changes", "type": "block", "content": { "mod": "platinum-changes" } },
-                { "id": "files-extended", "type": "block", "content": { "mod": "cria-files-extended" } }
+                { "id": "changes", "type": "block", "content": { "mod": "platinum-changes" } }
               ]
             }
           ]
