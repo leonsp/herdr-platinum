@@ -64,14 +64,11 @@ export default class PlatinumTabs extends View {
     try { this.panels = JSON.parse(localStorage.getItem("panels") ?? "{}"); } catch { this.panels = {}; }
     if (!this.panels || typeof this.panels !== "object" || Array.isArray(this.panels)) this.panels = {};
     this.swipe = { acc: 0, steps: 0, at: 0, last: 0 };
-    // The open-by-path button shows only when cria-file-preview is installed.
-    this.preview = false;
     // The Map button shows only when the agenttrail mod is installed.
     this.map = false;
     const installed = (name) => exec("sh", ["-c", `test -d "\${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/${name}"`])
       .then(r => r?.code === 0).catch(() => false);
     cx.spawn(async cx => {
-      this.preview = await installed("cria-file-preview");
       this.map = await installed("agenttrail");
       cx.notify();
     });
@@ -206,7 +203,7 @@ export default class PlatinumTabs extends View {
       .child(h_flex().id("tab-scroll").flex_1().min_w(0).h_full().items_end().gap(0).overflow_x_scrollbar().track_scroll(this.scroll)
         .on_size_change((_size, cx) => { if (active >= 0) { this.scroll.scroll_to_item(active); cx.notify(); } })
         .children([...shown.map(item), plus]))
-      .when(this.preview, el => el.child(bevel(t, "tab-open", false, [">", "Preview"], () => openOverlay({ mod: "platinum-open", kind: "dialog", width: 463, height: 187, frame: "none" }), false, "Open a file by path")))
+      .child(bevel(t, "tab-open", false, [">", "Preview"], () => openOverlay({ mod: "platinum-open", kind: "dialog", width: 463, height: 187, frame: "none" }), false, "Open a file by path"))
       .when(this.map, el => el.child(bevel(t, "tab-map", false, [svg("mods/platinum-tabs/compass.svg").size(16), "Map"], () => run("pane.split", { direction: "right", mod: "agenttrail" }), false, "Show the Agenttrail map")))
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg", "Browse files")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg", "Review git changes")))

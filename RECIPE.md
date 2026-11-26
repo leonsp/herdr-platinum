@@ -44,8 +44,7 @@ Top to bottom:
   radius 3, white highlight top and left, `#808080` shadow bottom and right
   (same bevel as the status bar buttons). The open panel's button is
   depressed: the bevel is swapped and the face is darker grey `#bbbbbb`.
-  With `cria-file-preview` installed, a `> Preview` button sits between `+`
-  and Files. It opens the `platinum-open` dialog (a text box, Cancel, Open
+  A `> Preview` button sits between `+` and Files. It opens the `platinum-open` dialog (a text box, Cancel, Open
   Tab, Open Split): paste a path, newlines removed, and the file opens in a
   split pane to the right (the default button, and Return), or a preview tab. With the `agenttrail` mod
   installed (sodiumsun/agenttrail, set its `mod.json` `place` to `none` or it
@@ -172,12 +171,15 @@ Mods:
   black 1px outline, radius 3, outer `pr(1).pb(1)` `#808080`, inner
   `pt(1).pl(1)` white, face `chrome`, bold 13px.
 
-Optional mods (gsydler/herdr-cria). Each is detected by a folder check in
-`${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods`; without it, nothing changes.
+Required mod (gsydler/herdr-cria), installed in
+`${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods`. The mods do not check for it.
 
 - `cria-file-preview`: a click on a file in `platinum-files` opens it in a
   preview tab (`tab.new` with `mod` and `props` `{file, on}`).
-- `platinum-open` (in this repo, needs `cria-file-preview`): the open-by-path
+
+Mods in this repo:
+
+- `platinum-open` (needs `cria-file-preview`): the open-by-path
   dialog. Same folder layout as the other mods; no layout block needed.
 - `platinum-menu`: modified copy of Herdr's `menu` mod, the right-click menu
   for spaces, tabs and terminals. Opened by `platinum-spaces` and
@@ -253,6 +255,5 @@ before replacing a key they use.
   maximizes or restores the window.
 - The Files panel shows folder and page icons in colour. The Commit button
   in Changes is a bordered rectangle.
-- With `cria-file-preview` installed, the `> Preview` button opens a dialog.
-  A pasted path, even with a stray newline, opens in a preview tab (Open) or
-  a split pane (Open Split). Without that mod, the button is absent.
+- The `> Preview` button opens a dialog. A pasted path, even with a stray
+  newline, opens in a preview tab (Open) or a split pane (Open Split).

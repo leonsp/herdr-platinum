@@ -70,13 +70,6 @@ export default class PlatinumChanges extends View {
     this.input.on("submit", (_e, cx) => this.commit(cx));
     this.input.on("focus", (_e, cx) => { this.typing = true; cx.notify(); });
     this.input.on("blur", (_e, cx) => { this.typing = false; cx.notify(); });
-    // Open in Split and Open in Tab need cria-file-preview.
-    this.preview = false;
-    cx.spawn(async (cx) => {
-      const r = await exec("sh", ["-c", 'test -d "${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/cria-file-preview"']).catch(() => null);
-      this.preview = r?.code === 0;
-      cx.notify();
-    });
     this.refresh(cx);
     cx.timer.every(10000, (cx) => this.refresh(cx));
   }
@@ -198,7 +191,7 @@ export default class PlatinumChanges extends View {
     const items = [
       { label: "Open Diff in Split", icon: "split-right", act: { run: ["pane.split", { direction: "right", mod: "platinum-diff", props: diff }] } },
       { label: "Open Diff in Tab", act: { run: ["tab.new", { name: `${name} diff`, mod: "platinum-diff", props: diff }] } },
-      ...(!gone && this.preview ? [
+      ...(!gone ? [
         { label: "Open File in Split", icon: "split-right", sep: true, act: { run: ["pane.split", { direction: "right", mod: "cria-file-preview", props: file }] } },
         { label: "Open File in Tab", act: { run: ["tab.new", { name, mod: "cria-file-preview", props: file }] } },
       ] : []),

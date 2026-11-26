@@ -69,13 +69,7 @@ export default class PlatinumFiles extends View {
     this.saved = new Map();
     this.entries = new Map(); this.folders = new Set(); this.pending = new Set(); this.marks = {};
     // Files open in cria-file-preview (Markdown, PDF, images, tables, JSON,
-    // code), when that mod is installed.
-    this.preview = false;
-    cx.spawn(async cx => {
-      const r = await exec("sh", ["-c", 'test -d "${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/cria-file-preview"']).catch(() => null);
-      this.preview = r?.code === 0;
-      cx.notify();
-    });
+    // code), which Platinum requires.
     this.refresh(cx);
     cx.timer.every(10000, cx => this.refresh(cx));
   }
@@ -189,12 +183,12 @@ export default class PlatinumFiles extends View {
     const abs = `${this.root}/${path}`, local = !this.on, dir = abs.slice(0, abs.lastIndexOf("/"));
     const file = { file: abs, on: this.on };
     const items = [
-      ...(!entry.dir && this.preview ? [
+      ...(!entry.dir ? [
         { label: "Open in Split", icon: "split-right", act: { run: ["pane.split", { direction: "right", mod: "cria-file-preview", props: file }] } },
         { label: "Open in Tab", act: { run: ["tab.new", { name: entry.name, mod: "cria-file-preview", props: file }] } },
       ] : []),
-      ...(local ? [{ label: "Reveal in Finder", sep: !entry.dir && this.preview, act: { exec: { cmd: "open", args: ["-R", abs] } } }] : []),
-      { label: "Copy Path", sep: !local && !entry.dir && this.preview, act: { copy: abs } },
+      ...(local ? [{ label: "Reveal in Finder", sep: !entry.dir, act: { exec: { cmd: "open", args: ["-R", abs] } } }] : []),
+      { label: "Copy Path", sep: !local && !entry.dir, act: { copy: abs } },
       { label: "Copy Relative Path", act: { copy: path } },
       ...(local ? [
         { label: "Rename…", sep: true, act: { dialog: { kind: "prompt", title: `Rename “${entry.name}”`, message: "Type a new name.", value: entry.name, ok: "Rename", height: 213,
@@ -224,11 +218,8 @@ export default class PlatinumFiles extends View {
         .on_mouse_down("right", (_e, cx) => { cx.stop_propagation(); this.menu(entry, path, cx); })
         .on_click((_e, cx) => {
           if (entry.dir) return this.toggle(path, cx);
-          if (this.preview) {
-            const file = `${this.root}/${path}`;
-            return run("tab.new", { name: entry.name, mod: "cria-file-preview", props: { file, on: this.on } });
-          }
-          this.show(path, cx);
+          const file = `${this.root}/${path}`;
+          run("tab.new", { name: entry.name, mod: "cria-file-preview", props: { file, on: this.on } });
         })
         // Solid disclosure triangles, as in the Finder.
         .child(entry.dir ? div().w(16).flex_none().text_size(14).text_color(t.foreground).child(open ? "▼" : "▶") : div().w(16).flex_none())

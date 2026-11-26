@@ -19,7 +19,7 @@ mods/platinum-agents/    Agents list, 14px text, square rows
 mods/platinum-menu/      right-click menus (space, tab, terminal)
 mods/platinum-new-menu/  the + menu: terminal, agents, spaces, worktrees
 mods/platinum-worktree/  New, Open and Remove worktree dialogs
-mods/platinum-open/      open a file by path (needs cria-file-preview)
+mods/platinum-open/      open a file by path
 mods/platinum-context/   right-click menu for Files and Changes rows
 mods/platinum-dialog/    Platinum alert and rename prompt
 mods/platinum-diff/      one file's diff in a split or tab
@@ -37,6 +37,10 @@ The mods need a layout with matching blocks and the Platinum colours. The
 block tree and palette are in `RECIPE.md`.
 
 ## Install
+
+The mods require `cria-file-preview` (gsydler/herdr-cria). Files, Changes and
+the Preview button open files in it. Install it into Herdr's `mods/` folder
+first.
 
 From a clone, link each mod into Herdr's home and check it:
 
