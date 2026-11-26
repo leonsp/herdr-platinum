@@ -135,7 +135,7 @@ export default class PlatinumGrip extends View {
     return [
       tab,
       this.module(t, "strip-settings", "Settings", "mods/platinum-grip/settings.svg", "app.settings"),
-      this.module(t, "strip-keys", "Keys", "mods/platinum-grip/keys.svg", "app.help"),
+      this.module(t, "strip-keys", "Keys", "mods/platinum-grip/keys.svg", "mod.open", { name: "platinum-help" }),
     ];
   }
 
