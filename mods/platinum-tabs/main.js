@@ -64,16 +64,13 @@ export default class PlatinumTabs extends View {
     try { this.panels = JSON.parse(localStorage.getItem("panels") ?? "{}"); } catch { this.panels = {}; }
     if (!this.panels || typeof this.panels !== "object" || Array.isArray(this.panels)) this.panels = {};
     this.swipe = { acc: 0, steps: 0, at: 0, last: 0 };
-    // The Files Extended button shows only when that mod is installed.
     // The open-by-path button shows only when cria-file-preview is installed.
-    this.extended = false;
     this.preview = false;
     // The Map button shows only when the agenttrail mod is installed.
     this.map = false;
     const installed = (name) => exec("sh", ["-c", `test -d "\${HERDR_APP_HOME:-$HOME/.config/herdr-app}/mods/${name}"`])
       .then(r => r?.code === 0).catch(() => false);
     cx.spawn(async cx => {
-      this.extended = await installed("cria-files-extended");
       this.preview = await installed("cria-file-preview");
       this.map = await installed("agenttrail");
       cx.notify();
@@ -213,7 +210,6 @@ export default class PlatinumTabs extends View {
       .when(this.map, el => el.child(bevel(t, "tab-map", false, [svg("mods/platinum-tabs/compass.svg").size(16), "Map"], () => run("pane.split", { direction: "right", mod: "agenttrail" }), false, "Show the Agenttrail map")))
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg", "Browse files")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg", "Review git changes")))
-      .when(this.extended && Boolean(find(root, "files-extended")), el => el.child(panelButton("files-extended", "Extended", "mods/cria-files-extended/icons/folder.svg", "Browse files, with a menu")))
       .when(w?.buttons, el => el.child(button("minimize", w.platform === "windows" ? svg("mods/tabs/win-min.svg").size(16) : "−", () => run("window.minimize")))
         .child(button("maximize", w.platform === "windows" ? svg(`mods/tabs/${w.maximized ? "win-restore" : "win-max"}.svg`).size(16) : "□", () => run("window.maximize")))
         .child(button("close-window", w.platform === "windows" ? svg("mods/tabs/win-close.svg").size(16) : svg("mods/pane/close.svg").size(13), () => run("window.close"))));

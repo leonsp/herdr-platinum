@@ -50,10 +50,7 @@ Top to bottom:
   split pane to the right (the default button, and Return), or a preview tab. With the `agenttrail` mod
   installed (sodiumsun/agenttrail, set its `mod.json` `place` to `none` or it
   docks itself into the layout), a compass `Map` button follows Preview and
-  runs `pane.split` `{direction:"right", mod:"agenttrail"}`. An optional panel
-  button,
-  Extended, shows only when the `cria-files-extended` mod is installed and the
-  layout has a `files-extended` block. Buttons, tab, space and agent names, and
+  runs `pane.split` `{direction:"right", mod:"agenttrail"}`. Buttons, tab, space and agent names, and
   the status bar items carry `.tooltip(text)` labels: names in full (a space adds its grey repo and branch text), buttons
   a few words (the grip says "Resize window"; the pane close and zoom boxes
   say "Close pane" and "Zoom pane").
@@ -212,10 +209,6 @@ Optional mods (gsydler/herdr-cria). Each is detected by a folder check in
   Unstage, Discard Changes…, Reveal in Finder, Copy Path, Copy Relative Path.
   Reveal, Rename and Trash are local only. Reads and writes go through `exec`
   (`git`, `open -R`, `osascript` for the Trash, `pbcopy`).
-- `cria-files-extended`: a Files panel with a right-click menu and file icons.
-  Add `{ "id": "files-extended", "type": "block", "content": { "mod":
-  "cria-files-extended" } }` to the `panel-body` stack (see
-  `layouts/platinum.json`) and `platinum-tabs` shows its button.
 
 `keys.json` merges into the person's own: add `cmd-k` under `global` and ask
 before replacing a key they use.
