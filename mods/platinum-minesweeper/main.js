@@ -23,7 +23,7 @@ const NAMES = { beginner: "Beginner", intermediate: "Intermediate", expert: "Exp
 // Overlay size for a level: fixed chrome around the board.
 export function sizeFor(level) {
   const [cols, rows] = LEVELS[level];
-  return { width: Math.max(320, cols * CELL + 35), height: rows * CELL + 185 };
+  return { width: Math.max(320, cols * CELL + 40), height: rows * CELL + 185 };
 }
 
 const raised = (child) => div().flex_none().bg(DARK).pr(1).pb(1).child(div().bg(LIGHT).pt(1).pl(1).child(child));
@@ -34,6 +34,9 @@ const push = (child, pressed = false) => div().flex_none().rounded(3).border_1()
     ? div().pr(1).pb(1).rounded(2).bg(LIGHT).child(div().pt(1).pl(1).rounded(2).bg(DARK).child(child))
     : div().pr(1).pb(1).rounded(2).bg(DARK).child(div().pt(1).pl(1).rounded(2).bg(LIGHT).child(child)));
 const sunken = (child) => div().flex_none().bg(LIGHT).pr(1).pb(1).child(div().bg(DARK).pt(1).pl(1).child(child));
+// MacMines-style grey frame: black edge, raised bevel, then a sunken well.
+const frame = (child) => div().flex_none().border_1().border_color("#000000").child(
+  raised(div().p(3).bg("#bbbbbb").child(sunken(child))));
 
 function art(name, size) {
   return image(`${ASSETS}/icons/${name}.svg`).w(size).h(size).flex_none();
@@ -41,10 +44,10 @@ function art(name, size) {
 
 function counter(value) {
   const text = value < 0 ? `-${String(Math.min(99, -value)).padStart(2, "0")}` : String(Math.min(999, value)).padStart(3, "0");
-  const digits = h_flex().gap(2).bg("#000000").p(1).children([...text].map((ch) => {
+  const digits = h_flex().gap(2).bg("#001a00").p(1).children([...text].map((ch) => {
     const lit = ch === "-" ? "g" : SEGMENTS[Number(ch)];
     return div().relative().w(11).h(23).children(SEG_RECTS.map(([x, y, w, h], i) =>
-      div().absolute().left(x).top(y).w(w).h(h).bg(lit.includes("abcdefg"[i]) ? "#ff0000" : "#650000")));
+      div().absolute().left(x).top(y).w(w).h(h).bg(lit.includes("abcdefg"[i]) ? "#3dff3d" : "#0a3a0a")));
   }));
   return sunken(digits);
 }
@@ -180,9 +183,9 @@ export default class Minesweeper extends View {
     // The bevel adds 2px (raised) or 1px (flat), so the cell totals CELL.
     const inner = exposed ? CELL - 1 : CELL - 2;
     const face = div().w(inner).h(inner).flex().items_center().justify_center()
-      .bg(i === b.boom ? "#ff0000" : exposed ? "#cccccc" : FACE).when(Boolean(content), (el) => el.child(content));
+      .bg(i === b.boom ? "#ff0000" : exposed ? "#f4f4f4" : FACE).when(Boolean(content), (el) => el.child(content));
     const el = exposed
-      ? div().flex_none().border_t(1).border_l(1).border_color(DARK).child(face)
+      ? div().flex_none().border_t(1).border_l(1).border_color("#aaaaaa").child(face)
       : raised(face);
     return el.id(`mine-${i}`)
       .on_mouse_down("left", (_e, cx) => { cx.stop_propagation(); if (b.live()) { this.held = true; cx.notify(); } })
@@ -207,13 +210,12 @@ export default class Minesweeper extends View {
     const smiley = div().id("mines-face").tooltip("New game").flex_none()
       .child(push(div().w(28).h(28).rounded(2).bg(FACE).flex().items_center().justify_center().child(art(faceName, 18))))
       .on_click((_e, cx) => { cx.stop_propagation(); this.newGame(cx); });
-    const panel = sunken(h_flex().h(40).items_center().justify_between().px(6).bg(FACE)
+    const panel = frame(h_flex().h(40).items_center().justify_between().px(6).bg("#bbbbbb")
       .child(counter(b.total - b.flags())).child(smiley).child(counter(this.seconds)));
 
-    const rows = v_flex().flex_none().children(Array.from({ length: b.rows }, (_v, y) =>
+    const rows = v_flex().flex_none().w(b.cols * CELL).h(b.rows * CELL).children(Array.from({ length: b.rows }, (_v, y) =>
       h_flex().flex_none().children(Array.from({ length: b.cols }, (_w, x) => this.cell(y * b.cols + x)))));
-    const board = h_flex().justify_center().child(
-      div().flex_none().w(b.cols * CELL + 4).h(b.rows * CELL + 4).bg(DARK).border_1().border_color("#000000").child(sunken(rows)));
+    const board = frame(rows);
 
     const best = this.options.best[this.options.level];
     const footer = h_flex().h(24).items_center().justify_between().font_family(FONT).text_size(12).text_color("#000000")
