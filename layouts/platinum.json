@@ -2,6 +2,7 @@
   "id": "root",
   "type": "column",
   "theme": "platinum",
+  "preview": "layouts/platinum.svg",
   "font": "Monaco",
   "font_size": 14,
   "ui_font": "Geneva",
