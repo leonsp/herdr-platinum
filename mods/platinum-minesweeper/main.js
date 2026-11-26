@@ -23,7 +23,7 @@ const NAMES = { beginner: "Beginner", intermediate: "Intermediate", expert: "Exp
 // Overlay size for a level: fixed chrome around the board.
 export function sizeFor(level) {
   const [cols, rows] = LEVELS[level];
-  return { width: Math.max(320, cols * CELL + 40), height: rows * CELL + 185 };
+  return { width: Math.max(320, cols * CELL + 40), height: rows * CELL + 187 };
 }
 
 const raised = (child) => div().flex_none().bg(DARK).pr(1).pb(1).child(div().bg(LIGHT).pt(1).pl(1).child(child));
@@ -37,6 +37,16 @@ const sunken = (child) => div().flex_none().bg(LIGHT).pr(1).pb(1).child(div().bg
 // MacMines-style grey frame: black edge, raised bevel, then a sunken well.
 const frame = (child) => div().flex_none().border_1().border_color("#000000").child(
   raised(div().p(3).bg("#bbbbbb").child(sunken(child))));
+
+// Mac OS 9 pop-up: bold label, a divider, then an up/down arrow block.
+const popup = (label) => div().flex_none().pr(1).pb(1).bg("#000000").rounded(4).child(push(
+  h_flex().h(18).items_center().bg(FACE).rounded(2)
+    .child(div().w(96).px(8).font_family(FONT).font_bold().text_size(12).text_color("#000000").child(label))
+    .child(div().w(1).h(18).bg("#000000"))
+    .child(v_flex().w(18).items_center().justify_center().text_size(6).text_color("#000000").child("▲").child("▼"))));
+
+const checkbox = (on) => div().w(12).h(12).flex_none().border_1().border_color("#000000").bg(LIGHT)
+  .flex().items_center().justify_center().text_size(10).text_color("#000000").when(on, (el) => el.child("✕"));
 
 function art(name, size) {
   return image(`${ASSETS}/icons/${name}.svg`).w(size).h(size).flex_none();
@@ -59,6 +69,8 @@ export default class Minesweeper extends View {
     this.board = new Board(this.options.level);
     this.seconds = 0;
     this.held = false;
+    this.menu = false;
+    this.hover = null;
     this.timer = null;
     this.handle = cx.focus_handle();
     cx.timer.after(300, () => this.handle.focus());
@@ -162,10 +174,34 @@ export default class Minesweeper extends View {
       .child(div().w(14).h(14).flex_none());
   }
 
-  button(id, label, active, onClick) {
-    const text = div().h(22).px(10).flex().items_center().justify_center().font_family(FONT).text_size(12)
-      .text_color("#000000").rounded(2).bg(active ? "#c4c4c4" : FACE).when(active, (el) => el.font_bold()).child(label);
-    return div().id(id).flex_1().child(push(text, active).w_full()).on_click((_e, cx) => { cx.stop_propagation(); onClick(cx); });
+  // The level menu: a transparent backdrop (so a click away closes it without
+  // reaching the board), then a white list with the current level ticked and
+  // the hovered row inverted.
+  menuView() {
+    const levels = Object.keys(LEVELS);
+    const items = levels.map((level) => {
+      const current = level === this.options.level;
+      const on = this.hover === level;
+      return div().id(`menu-${level}`).h(20).px(8).flex().items_center().gap(6).font_family(FONT).text_size(12)
+        .bg(on ? "#000000" : LIGHT).text_color(on ? LIGHT : "#000000")
+        .child(div().w(10).child(current ? "✓" : "")).child(NAMES[level])
+        .on_hover((hovered, cx) => { this.hover = hovered ? level : (this.hover === level ? null : this.hover); cx.notify(); })
+        .on_click((_e, cx) => {
+          cx.stop_propagation();
+          this.menu = false;
+          this.hover = null;
+          if (!current) this.setLevel(level);
+          else cx.notify();
+        });
+    });
+    const height = levels.length * 20 + 2;
+    return div().absolute().left(0).bottom(0)
+      .child(div().id("menu-away").absolute().left(-800).top(-800).w(1800).h(1800)
+        .on_click((_e, cx) => { cx.stop_propagation(); this.menu = false; this.hover = null; cx.notify(); }))
+      .child(div().absolute().left(0).bottom(24).w(124).h(height + 2).relative()
+        .child(div().absolute().top(2).left(2).right(0).bottom(0).bg("#00000066"))
+        .child(div().absolute().top(0).left(0).right(2).bottom(2).bg(LIGHT).border_1().border_color("#000000")
+          .child(v_flex().children(items))));
   }
 
   cell(i) {
@@ -202,11 +238,6 @@ export default class Minesweeper extends View {
     const b = this.board;
     const faceName = b.state === "lost" ? "face-dead" : b.state === "won" ? "face-cool" : this.held ? "face-ooh" : "face-smile";
 
-    const levels = h_flex().gap(6).children(Object.keys(LEVELS).map((level) =>
-      this.button(`level-${level}`, NAMES[level], level === this.options.level, () => {
-        if (level !== this.options.level) this.setLevel(level);
-      })));
-
     const smiley = div().id("mines-face").tooltip("New game").flex_none()
       .child(push(div().w(28).h(28).rounded(2).bg(FACE).flex().items_center().justify_center().child(art(faceName, 18))))
       .on_click((_e, cx) => { cx.stop_propagation(); this.newGame(cx); });
@@ -218,21 +249,29 @@ export default class Minesweeper extends View {
     const board = frame(rows);
 
     const best = this.options.best[this.options.level];
-    const footer = h_flex().h(24).items_center().justify_between().font_family(FONT).text_size(12).text_color("#000000")
+    const levelRow = h_flex().h(28).items_center().gap(8).font_family(FONT).text_size(12).text_color("#000000")
+      .child("Level:")
+      .child(div().relative().flex_none()
+        .child(div().id("mines-level").child(popup(NAMES[this.options.level]))
+          .on_click((_e, cx) => { cx.stop_propagation(); this.menu = !this.menu; cx.notify(); }))
+        .when(this.menu, (el) => el.child(this.menuView())));
+    const bestRow = h_flex().h(24).items_center().justify_between().font_family(FONT).text_size(12).text_color("#000000")
       .child(div().child(`Best ${NAMES[this.options.level]}: ${best === undefined ? "none" : `${best} s`}`))
-      .child(div().id("mines-sound").flex_none().child(
-        push(div().h(22).px(10).rounded(2).flex().items_center().bg(FACE).child(`Sound ${this.options.sound ? "on" : "off"}`)))
+      .child(div().id("mines-sound").flex_none().flex().items_center().gap(6).child(checkbox(this.options.sound)).child("Sound")
         .on_click((_e, cx) => { cx.stop_propagation(); this.options.sound = !this.options.sound; this.save(); cx.notify(); }));
+    const footer = v_flex().child(levelRow).child(bestRow);
 
     const win = v_flex().id("mines").track_focus(this.handle)
       .on_key_down((e, cx) => {
-        if (e.key === "escape") { this.dismiss(); cx.stop_propagation(); }
+        if (e.key !== "escape") return;
+        cx.stop_propagation();
+        if (this.menu) { this.menu = false; this.hover = null; cx.notify(); } else this.dismiss();
       })
       .size_full().min_h(0).bg("#dddddd").border_1().border_color("#000000")
       .font_family(FONT).text_color("#000000")
       .child(this.titleBar(t))
       .child(v_flex().flex_1().min_h(0).p(12).gap(8).items_center()
-        .child(v_flex().gap(8).child(levels).child(panel).child(board).child(footer)))
+        .child(v_flex().gap(8).child(panel).child(board).child(footer)))
       .on_mouse_down_out((_e, cx) => { if (this.held) { this.held = false; cx.notify(); } });
 
     return div().relative().size_full()
