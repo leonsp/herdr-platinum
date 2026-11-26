@@ -24,11 +24,13 @@ mods/platinum-context/   right-click menu for Files and Changes rows
 mods/platinum-dialog/    Platinum alert and rename prompt
 mods/platinum-diff/      one file's diff in a split or tab
 mods/platinum-toast/     notifications ("Claude Code needs you")
-mods/platinum-grip/      status bar: control strip (Settings, Keys),
+mods/platinum-grip/      status bar: control strip (Settings, Keys, Mines),
                          breadcrumbs, git branch, split, zoom, palette,
                          clock, resize grip
 mods/platinum-help/      the Keybinds dialog, opened by the strip's Keys
                          button
+mods/platinum-minesweeper/
+                         Minesweeper, opened by the strip's Mines button
 keys.json                cmd-k opens the command palette, cmd-/ the
                          Keybinds dialog
 ```
@@ -46,7 +48,7 @@ From a clone, link each mod into Herdr's home and check it:
 
 ```sh
 H=~/.config/herdr-app
-for m in bar pane files changes tabs spaces agents grip menu new-menu worktree open context dialog diff toast help; do
+for m in bar pane files changes tabs spaces agents grip menu new-menu worktree open context dialog diff toast help minesweeper; do
   ln -s "$(pwd)/mods/platinum-$m" "$H/mods/platinum-$m"
   herdr-app check "$H/mods/platinum-$m"
 done

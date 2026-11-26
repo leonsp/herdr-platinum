@@ -205,6 +205,12 @@ Mods in this repo:
 - `platinum-diff`: one file's uncommitted diff in a pane or tab, props
   `{path, root, on}`. Refreshes every 3 seconds. It repeats the diff code in
   `platinum-changes`, as mods can't import from each other.
+- `platinum-minesweeper`: Minesweeper in a dialog, opened by the Mines tile
+  in the `platinum-grip` control strip with `mod.open`. Rules are in
+  `board.js` (no imports; `node --test board.test.js`). Beginner,
+  Intermediate and Expert buttons reopen the dialog at the new size. State
+  (level, sound, best times) lives in `shared("platinum.mines")`. It loads
+  its icons and sounds from `mods/platinum-minesweeper/`.
 - Files rows: Open in Split and Open in Tab (needs `cria-file-preview`),
   Reveal in Finder, Copy Path, Copy Relative Path, Rename…, Move to Trash….
   Changes rows: Open Diff in Split and Tab, Open File in Split and Tab, Stage,

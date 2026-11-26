@@ -1,4 +1,4 @@
-// Mac OS 9 Platinum status bar: a control strip (Settings, keys) then
+// Mac OS 9 Platinum status bar: a control strip (Settings, Keys, Mines) then
 // folder breadcrumbs and git branch on the left,
 // a sunken branch field and bevelled buttons (split, text zoom, palette) on the
 // right, then the clock and the resize grip.
@@ -136,6 +136,7 @@ export default class PlatinumGrip extends View {
       tab,
       this.module(t, "strip-settings", "Settings", "mods/platinum-grip/settings.svg", "app.settings"),
       this.module(t, "strip-keys", "Keys", "mods/platinum-grip/keys.svg", "mod.open", { name: "platinum-help" }),
+      this.module(t, "strip-mines", "Mines", "mods/platinum-grip/mines.svg", "mod.open", { name: "platinum-minesweeper" }),
     ];
   }
 
