@@ -8,10 +8,13 @@ export const LEVELS = {
 };
 
 export class Board {
-  constructor(level, rand = Math.random) {
+  constructor(level, rand = Math.random, now = Date.now) {
     this.level = LEVELS[level] ? level : "beginner";
     [this.cols, this.rows, this.total] = LEVELS[this.level];
     this.rand = rand;
+    this.now = now;
+    this.started = undefined;
+    this.finished = undefined;
     this.cells = Array.from({ length: this.cols * this.rows }, () => ({
       mine: false,
       n: 0,
@@ -51,6 +54,7 @@ export class Board {
       c.n = this.neighbors(j).filter((k) => this.cells[k].mine).length;
     });
     this.state = "playing";
+    this.started = this.now();
   }
 
   live() {
@@ -64,6 +68,7 @@ export class Board {
     if (c.mine) {
       this.boom = i;
       this.state = "lost";
+      this.finished = this.now();
       return;
     }
     const todo = [i];
@@ -76,6 +81,7 @@ export class Board {
     }
     if (this.cells.every((x) => x.mine || x.open)) {
       this.state = "won";
+      this.finished = this.now();
       this.cells.forEach((x) => {
         if (x.mine) x.flag = true;
       });
@@ -94,6 +100,13 @@ export class Board {
     const near = this.neighbors(i);
     if (near.filter((j) => this.cells[j].flag).length !== c.n) return;
     for (const j of near) this.reveal(j);
+  }
+
+  // Whole seconds since the first click, frozen when the game ends, max 999.
+  elapsed() {
+    if (this.started === undefined) return 0;
+    const end = this.finished ?? this.now();
+    return Math.min(999, Math.floor((end - this.started) / 1000));
   }
 
   flags() {

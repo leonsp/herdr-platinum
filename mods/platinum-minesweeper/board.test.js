@@ -107,3 +107,21 @@ test("flags() may exceed total", () => {
   assert.equal(b.flags(), 12);
   assert.ok(b.flags() > b.total);
 });
+
+test("a first-click win has a numeric elapsed time of 0", () => {
+  const b = new Board("beginner", () => 0, () => 5000);
+  b.reveal(80);
+  assert.equal(b.state, "won");
+  assert.equal(b.elapsed(), 0);
+});
+
+test("elapsed counts whole seconds from the first click and caps at 999", () => {
+  let t = 1000;
+  const b = new Board("beginner", seeded(3), () => t);
+  assert.equal(b.elapsed(), 0);
+  b.reveal(40);
+  t = 8500;
+  assert.equal(b.elapsed(), 7);
+  t = 5000000;
+  assert.equal(b.elapsed(), 999);
+});

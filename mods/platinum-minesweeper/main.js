@@ -58,6 +58,7 @@ export default class Minesweeper extends View {
     this.held = false;
     this.timer = null;
     this.handle = cx.focus_handle();
+    cx.timer.after(300, () => this.handle.focus());
     // mod.json opens at the beginner size; reopen once at the saved level's.
     if (this.options.level !== "beginner" && !(props() ?? p)?.sized) {
       cx.timer.after(0, () => this.reopen());
@@ -110,9 +111,9 @@ export default class Minesweeper extends View {
     fn();
     const b = this.board;
     if (before === "ready" && b.state === "playing") {
-      this.started = Date.now();
       this.timer = cx.timer.every(1000, (cx) => {
-        this.seconds = Math.min(999, Math.floor((Date.now() - this.started) / 1000));
+        this.seconds = b.elapsed();
+        if (this.seconds >= 999) this.stop();
         cx.notify();
       });
     }
@@ -122,7 +123,7 @@ export default class Minesweeper extends View {
         this.sfx("boom");
       } else if (b.state === "won") {
         this.stop();
-        this.seconds = Math.min(999, Math.floor((Date.now() - this.started) / 1000));
+        this.seconds = b.elapsed();
         const best = this.options.best[this.options.level];
         if (best === undefined || this.seconds < best) {
           this.options.best = { ...this.options.best, [this.options.level]: this.seconds };
@@ -185,6 +186,7 @@ export default class Minesweeper extends View {
       : raised(face);
     return el.id(`mine-${i}`)
       .on_mouse_down("left", (_e, cx) => { cx.stop_propagation(); if (b.live()) { this.held = true; cx.notify(); } })
+      .on_hover((hovered, cx) => { if (!hovered && this.held) { this.held = false; cx.notify(); } })
       .on_click((e, cx) => {
         this.play(() => (c.open && e.click_count >= 2 ? b.chord(i) : b.reveal(i)), cx);
       })
