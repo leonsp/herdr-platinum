@@ -1,4 +1,5 @@
-// Mac OS 9 Platinum status bar: folder breadcrumbs and git branch on the left,
+// Mac OS 9 Platinum status bar: a control strip (Settings, layout, keys) then
+// folder breadcrumbs and git branch on the left,
 // a sunken branch field and bevelled buttons (split, text zoom, palette) on the
 // right, then the clock and the resize grip.
 // Herdr cannot resize the window from a mod, so a click on the grip zooms
@@ -48,6 +49,7 @@ export default class PlatinumGrip extends View {
     this.branch = null;
     this.where = "";
     this.tick = 0;
+    this.open = true;
     cx.timer.every(2000, (cx) => this.poll(cx));
     this.poll(cx);
   }
@@ -100,6 +102,44 @@ export default class PlatinumGrip extends View {
       });
   }
 
+  // A control-strip module: icon and a small black triangle on a bevelled tile.
+  module(t, id, tip, icon, command, args) {
+    return div().id(id).tooltip(tip).flex_none().rounded(3).border_1().border_color("#000000").bg(DARK)
+      .child(
+        div().pr(1).pb(1).rounded(2).bg(DARK).child(
+          div().pt(1).pl(1).rounded(2).bg(LIGHT).child(
+            h_flex().h(16).px(4).gap(3).items_center().bg(t.chrome).hover((s) => s.bg(t.hover))
+              .child(image(icon).w(12).h(12))
+              .child(div().text_size(7).text_color("#000000").child("▶")))))
+      .on_click((_e, cx) => {
+        cx.stop_propagation();
+        run(command, args);
+      });
+  }
+
+  // The strip's end tab folds the modules away and brings them back.
+  strip(t) {
+    const tab = div().id("strip-tab").tooltip(this.open ? "Hide the control strip" : "Show the control strip")
+      .flex_none().rounded(3).border_1().border_color("#000000").bg(DARK)
+      .child(
+        div().pr(1).pb(1).rounded(2).bg(DARK).child(
+          div().pt(1).pl(1).rounded(2).bg(LIGHT).child(
+            div().w(12).h(16).flex().items_center().justify_center().bg(t.chrome).text_size(8).text_color("#000000")
+              .hover((s) => s.bg(t.hover)).child(this.open ? "◀" : "▶"))))
+      .on_click((_e, cx) => {
+        cx.stop_propagation();
+        this.open = !this.open;
+        cx.notify();
+      });
+    if (!this.open) return [tab];
+    return [
+      tab,
+      this.module(t, "strip-settings", "Settings", "mods/platinum-grip/settings.svg", "app.settings"),
+      this.module(t, "strip-layout", "Next layout", "mods/platinum-grip/layout.svg", "layout.switch"),
+      this.module(t, "strip-keys", "Keys", "mods/platinum-grip/keys.svg", "app.help"),
+    ];
+  }
+
   render(_cx) {
     const t = theme();
     const { cwd } = location();
@@ -122,6 +162,7 @@ export default class PlatinumGrip extends View {
       .font_family(FONT)
       .text_color(t.foreground)
       .children([
+        ...this.strip(t),
         div().id("crumbs").tooltip(cwd || "No folder").flex_1().min_w(0).truncate().child(this.crumbs(cwd)),
         ...readouts,
         this.button(t, "split-right", "Split the pane to the right", image("mods/platinum-grip/split-right.svg").w(14).h(14), "pane.split", { direction: "right" }),
