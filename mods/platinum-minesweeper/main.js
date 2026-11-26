@@ -198,10 +198,11 @@ export default class Minesweeper extends View {
     return div().absolute().left(0).bottom(0)
       .child(div().id("menu-away").absolute().left(-800).top(-800).w(1800).h(1800)
         .on_click((_e, cx) => { cx.stop_propagation(); this.menu = false; this.hover = null; cx.notify(); }))
-      .child(div().absolute().left(0).bottom(24).w(124).h(height + 2).relative()
-        .child(div().absolute().top(2).left(2).right(0).bottom(0).bg("#00000066"))
-        .child(div().absolute().top(0).left(0).right(2).bottom(2).bg(LIGHT).border_1().border_color("#000000")
-          .child(v_flex().children(items))));
+      .child(div().absolute().left(0).bottom(24).w(124).h(height + 2)
+        .child(div().relative().size_full()
+          .child(div().absolute().top(2).left(2).right(0).bottom(0).bg("#00000066"))
+          .child(div().absolute().top(0).left(0).right(2).bottom(2).bg(LIGHT).border_1().border_color("#000000")
+            .child(v_flex().children(items)))));
   }
 
   cell(i) {
