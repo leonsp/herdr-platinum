@@ -29,7 +29,8 @@ mods/platinum-grip/      status bar: control strip (Settings, Keys),
                          clock, resize grip
 mods/platinum-help/      the Keybinds dialog, opened by the strip's Keys
                          button
-keys.json                cmd-k opens the command palette
+keys.json                cmd-k opens the command palette, cmd-/ the
+                         Keybinds dialog
 ```
 
 The mods need a layout with matching blocks and the Platinum colours. The

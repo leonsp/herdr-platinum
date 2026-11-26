@@ -1,3 +1,6 @@
 {
-  "global": { "cmd-k": "app.palette" }
+  "global": {
+    "cmd-k": "app.palette",
+    "cmd-/": "mod.open:platinum-help"
+  }
 }
