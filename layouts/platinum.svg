@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" shape-rendering="crispEdges">
+  <rect width="320" height="200" fill="#8c8cb4"/>
+  <!-- menu bar -->
+  <rect width="320" height="12" fill="#dddddd"/>
+  <rect y="12" width="320" height="1" fill="#000000"/>
+  <rect x="6" y="3" width="6" height="6" fill="#000000"/>
+  <rect x="20" y="4" width="22" height="4" fill="#555555"/>
+  <rect x="50" y="4" width="18" height="4" fill="#555555"/>
+  <rect x="76" y="4" width="26" height="4" fill="#555555"/>
+  <rect x="280" y="4" width="34" height="4" fill="#555555"/>
+  <!-- window -->
+  <rect x="12" y="22" width="296" height="168" fill="#dddddd" stroke="#000000"/>
+  <rect x="13" y="23" width="294" height="1" fill="#ffffff"/>
+  <rect x="13" y="23" width="1" height="166" fill="#ffffff"/>
+  <!-- title bar with pinstripes -->
+  <rect x="14" y="24" width="292" height="12" fill="#ffffff"/>
+  <path d="M14 26h292M14 28h292M14 30h292M14 32h292M14 34h292" stroke="#bbbbbb"/>
+  <rect x="18" y="26" width="8" height="8" fill="#dddddd" stroke="#000000"/>
+  <rect x="120" y="25" width="80" height="10" fill="#dddddd"/>
+  <rect x="128" y="28" width="64" height="4" fill="#000000"/>
+  <rect x="14" y="36" width="292" height="1" fill="#000000"/>
+  <!-- sidebar -->
+  <rect x="14" y="37" width="82" height="152" fill="#eeeeee"/>
+  <rect x="96" y="37" width="1" height="152" fill="#000000"/>
+  <rect x="20" y="44" width="60" height="4" fill="#555555"/>
+  <rect x="20" y="54" width="44" height="4" fill="#888888"/>
+  <rect x="20" y="64" width="54" height="4" fill="#888888"/>
+  <rect x="14" y="110" width="82" height="1" fill="#000000"/>
+  <rect x="20" y="118" width="50" height="4" fill="#555555"/>
+  <rect x="20" y="128" width="40" height="4" fill="#888888"/>
+  <!-- terminal -->
+  <rect x="98" y="37" width="208" height="152" fill="#000000"/>
+  <rect x="104" y="44" width="60" height="3" fill="#6e6ef0"/>
+  <rect x="104" y="51" width="130" height="3" fill="#aaaaaa"/>
+  <rect x="104" y="58" width="96" height="3" fill="#aaaaaa"/>
+  <rect x="104" y="65" width="6" height="4" fill="#dddddd"/>
+  <!-- grow box -->
+  <rect x="294" y="177" width="12" height="12" fill="#dddddd"/>
+  <path d="M297 186h6M300 183h3M303 180h0" stroke="#555555"/>
+</svg>
